@@ -3,288 +3,215 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LYDIK — Симулятор открытия кейсов CS2</title>
+  <title>LYDIK — Симулятор кейсов CS2</title>
   <style>
-    :root {
-      --bg-color: #0b0e14;
-      --card-bg: #151a23;
-      --accent: #ff8c00;
-      --accent-hover: #ffa500;
-      --text: #ffffff;
-      --text-muted: #8a94a6;
-    }
-
+    :root { --bg-color: #080b10; --card-bg: rgba(21, 26, 35, 0.75); --accent: #ff8c00; --accent-hover: #ffa500; --text: #ffffff; --text-muted: #8a94a6; --success: #00ff88; --fail: #e74c3c; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text); padding-bottom: 50px; }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 40px;
-      background-color: var(--card-bg);
-      border-bottom: 2px solid #1f2633;
-    }
-    .logo { font-size: 24px; font-weight: bold; color: var(--accent); letter-spacing: 2px; }
-    .balance-box {
-      font-size: 18px;
-      background: #0b0e14;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--accent);
-    }
-    #balance { color: #00ff88; font-weight: bold; }
-
-    .opening-zone {
-      max-width: 850px;
-      margin: 30px auto;
-      text-align: center;
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
+    body { background-color: var(--bg-color); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
     
-    .multi-roulette-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 20px 0;
-    }
+    .bg-waves { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 20%, #151d2a 0%, #080b10 80%); overflow: hidden; }
+    .wave { position: absolute; width: 200%; height: 200%; opacity: 0.15; border-radius: 40%; }
+    .wave-1 { top: -120%; left: -50%; background: linear-gradient(135deg, #ff8c00 0%, #e74c3c 100%); animation: rotateWave 25s infinite linear; }
+    .wave-2 { top: -130%; left: -40%; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); animation: rotateWave 35s infinite linear reverse; opacity: 0.1; }
+    @keyframes rotateWave { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(21, 26, 35, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 100; position: relative; }
+    .logo { font-size: 26px; font-weight: 900; background: linear-gradient(45deg, #ff8c00, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
+    
+    .nav-tabs { display: flex; gap: 15px; position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-btn { background: transparent; color: var(--text-muted); border: 1px solid transparent; font-size: 16px; font-weight: bold; padding: 8px 20px; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+    .nav-btn:hover { color: var(--text); }
+    .nav-btn.active { color: var(--accent); border: 1px solid rgba(255, 140, 0, 0.4); background: rgba(255, 140, 0, 0.1); box-shadow: 0 0 10px rgba(255,140,0,0.2); }
+    
+    .balance-box { font-size: 16px; background: rgba(11, 14, 20, 0.8); padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(255, 140, 0, 0.4); cursor: pointer; transition: 0.3s; }
+    .balance-box:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 140, 0, 0.5); }
+    #balance { color: var(--success); font-weight: bold; }
 
-    .roulette-wrapper {
-      position: relative;
-      width: 100%;
-      height: 140px;
-      overflow: hidden;
-      background: #0b0e14;
-      border-radius: 8px;
-      border: 1px solid #2a3447;
-    }
-    .pointer {
-      position: absolute;
-      left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--accent);
-      z-index: 10;
-      transform: translateX(-50%);
-      box-shadow: 0 0 10px var(--accent);
-    }
-    .roulette-track {
-      display: flex;
-      position: absolute;
-      left: 0;
-      top: 5px;
-      /* Медленная анимация: 7 секунд */
-      transition: transform 7s cubic-bezier(0.08, 0.9, 0.1, 1);
-    }
+    .btn { background: linear-gradient(135deg, var(--accent), #ff5500); color: #000; border: none; padding: 14px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .btn:hover:not(:disabled) { transform: scale(1.03); box-shadow: 0 0 15px rgba(255,140,0,0.4); }
+    .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-    .amount-selector {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    .count-btn {
-      background: #1a212d;
-      color: var(--text);
-      border: 1px solid #2a3447;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .count-btn.active {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
-    }
-
-    .item-card {
-      width: 110px;
-      height: 130px;
-      margin: 0 5px;
-      background: #1a212d;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      flex-shrink: 0;
-      font-size: 11px;
-      text-align: center;
-      border-bottom: 4px solid #888;
-    }
-    .item-card img {
-      width: 95px;
-      height: 65px;
-      object-fit: contain;
-      margin-top: 5px;
-      filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6));
-    }
-    .item-card .item-name {
-      font-weight: 500;
-      line-height: 1.2;
-    }
-    .item-card .item-price {
-      color: #00ff88;
-      font-weight: bold;
-      margin-top: 2px;
-    }
-
-    .item-card.blue { border-color: #4b69ff; }
-    .item-card.purple { border-color: #d32ce6; }
-    .item-card.pink { border-color: #eb4b4b; }
-    .item-card.gold { border-color: #ffd700; }
-
-    .btn {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 12px 30px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn:hover { background: var(--accent-hover); transform: scale(1.05); }
-    .btn:disabled { background: #444; cursor: not-allowed; transform: none; }
-
-    .btn-sell {
-      background: #e74c3c;
-      color: #fff;
-      border: none;
-      padding: 4px 8px;
-      font-size: 10px;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 4px;
-      width: 100%;
-    }
+    .item-card { width: 110px; height: 130px; margin: 0 5px; background: rgba(26, 33, 45, 0.8); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; flex-shrink: 0; font-size: 11px; text-align: center; border-bottom: 4px solid #888; transition: 0.3s; cursor: pointer; position: relative; }
+    .item-card img { width: 95px; height: 65px; object-fit: contain; margin-top: 5px; filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.7)); }
+    .item-card .item-name { font-weight: 600; line-height: 1.2; }
+    .item-card .item-price { color: var(--success); font-weight: bold; }
+    .item-card.blue { border-bottom-color: #4b69ff; } .item-card.purple { border-bottom-color: #d32ce6; } .item-card.pink { border-bottom-color: #eb4b4b; } .item-card.gold { border-bottom-color: #ffd700; }
+    .item-card.selected-for-upg { box-shadow: 0 0 15px var(--accent); border: 2px solid var(--accent); }
+    
+    .btn-sell { background: #e74c3c; color: #fff; border: none; padding: 5px 0; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 5px; transition: 0.2s; }
     .btn-sell:hover { background: #c0392b; }
 
-    .case-contents {
-      margin-top: 25px;
-      padding-top: 15px;
-      border-top: 1px solid #2a3447;
-    }
-    .case-contents h3 {
-      font-size: 16px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-    .contents-grid {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    /* Кейсы */
+    .section-zone { max-width: 900px; margin: 25px auto; text-align: center; background: var(--card-bg); backdrop-filter: blur(12px); padding: 30px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+    .multi-roulette-container { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
+    .roulette-wrapper { position: relative; width: 100%; height: 140px; overflow: hidden; background: rgba(11, 14, 20, 0.9); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+    .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
+    .roulette-track { display: flex; position: absolute; left: 0; top: 5px; will-change: transform; }
+    
+    .controls-container { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; }
+    .selector-row { display: flex; align-items: center; gap: 10px; }
+    .count-btn, .speed-btn { background: rgba(26, 33, 45, 0.8); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+    .count-btn.active, .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 140, 0, 0.4); }
 
-    .cases-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-    .case-card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: 0.2s;
-    }
-    .case-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-    .case-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-    .case-price { color: #00ff88; font-size: 16px; margin-top: 10px; }
+    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .case-card { background: var(--card-bg); border-radius: 14px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+    .case-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255,140,0,0.15); }
+    .case-img { width: 140px; height: 110px; object-fit: contain; margin: 12px 0; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6)); }
 
-    .inventory-section {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    .inventory-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 15px;
-    }
+    /* Апгрейдер Экран */
+    .upgrader-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 40px auto; padding: 40px; background: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.6); backdrop-filter: blur(12px); }
+    .upg-slot { width: 160px; height: 200px; background: rgba(11, 14, 20, 0.8); border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; text-align: center; padding: 10px; }
+    .upg-slot.active-slot { border-color: var(--accent); background: rgba(21, 26, 35, 1); }
+    .upg-slot .item-card { margin: 0; width: 100%; height: 100%; border: none; background: transparent; cursor: default; }
+    
+    .upg-center { position: relative; display: flex; flex-direction: column; align-items: center; }
+    
+    .upg-wheel-container { width: 280px; height: 280px; border-radius: 50%; border: 6px solid #1a212d; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: visible; }
+    .upg-wheel { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(var(--success) 0deg, var(--success) 0deg, #2a3447 0deg, #2a3447 360deg); overflow: hidden; }
+    
+    .upg-rotating-pointer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; pointer-events: none; z-index: 5; transform-origin: center center; will-change: transform; }
+    /* Увеличенная стрелка (шире и длиннее) */
+    .upg-arrow-tip { position: absolute; top: -20px; left: calc(50% - 10px); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 26px solid var(--accent); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.9)); }
+
+    .upg-inner { position: absolute; top: 12%; left: 12%; width: 76%; height: 76%; background: #080b10; border-radius: 50%; border: 4px solid #1a212d; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); z-index: 6; }
+    
+    #upg-chance { font-size: 32px; font-weight: bold; color: #fff; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(255,255,255,0.2); }
+    #upg-msg { font-size: 14px; font-weight: bold; position: absolute; bottom: 20px; text-transform: uppercase; }
+
+    /* Инвентарь */
+    .inventory-section { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+    .inventory-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; min-height: 120px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; }
+
+    /* Модалки */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
+    .modal { background: rgba(21, 26, 35, 0.95); border: 1px solid rgba(255, 140, 0, 0.3); padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+    .modal input { width: 100%; padding: 10px; background: #0b0e14; border: 1px solid #2a3447; border-radius: 8px; color: var(--success); font-size: 18px; font-weight: bold; text-align: center; outline: none; margin: 15px 0; }
+    .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+    .modal-btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: #333; color: #fff; }
+    .modal-btn.confirm { background: var(--accent); color: #000; }
+    
+    #skins-modal .modal { width: 650px; max-width: 95vw; }
+    .skins-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-height: 400px; overflow-y: auto; margin-top: 15px; }
+    .skins-grid .item-card { cursor: pointer; height: 130px; }
   </style>
 </head>
 <body>
+  <div class="bg-waves">
+    <div class="wave wave-1"></div><div class="wave wave-2"></div>
+  </div>
 
   <header>
     <div class="logo">LYDIK</div>
-    <div class="balance-box">Баланс: <span id="balance">100</span> ₽</div>
+    <div class="nav-tabs">
+      <button class="nav-btn active" id="tab-cases" onclick="switchTab('cases')">Кейсы</button>
+      <button class="nav-btn" id="tab-upgrader" onclick="switchTab('upgrader')">Апгрейдер</button>
+    </div>
+    <div class="balance-box" onclick="document.getElementById('deposit-modal').style.display='flex'">Баланс: <span id="balance">100</span> ₽</div>
   </header>
 
-  <main>
-    <section class="opening-zone">
+  <!-- Вкладка Кейсов -->
+  <main id="view-cases">
+    <section class="section-zone">
       <h2 id="current-case-name">Выберите кейс для открытия</h2>
-      
-      <div class="amount-selector">
-        <button class="count-btn active" onclick="setOpenAmount(1)">1x</button>
-        <button class="count-btn" onclick="setOpenAmount(2)">2x</button>
-        <button class="count-btn" onclick="setOpenAmount(3)">3x</button>
-        <button class="count-btn" onclick="setOpenAmount(4)">4x</button>
-      </div>
-
       <div class="multi-roulette-container" id="roulettes-container">
-        <div class="roulette-wrapper">
-          <div class="pointer"></div>
-          <div class="roulette-track" id="track-0"></div>
+        <div class="roulette-wrapper"><div class="pointer"></div><div class="roulette-track" id="track-0"></div></div>
+      </div>
+      <div class="controls-container">
+        <div class="selector-row">
+          <button class="count-btn active" onclick="setCount(1, this)">x1</button>
+          <button class="count-btn" onclick="setCount(2, this)">x2</button>
+          <button class="count-btn" onclick="setCount(3, this)">x3</button>
+          <button class="count-btn" onclick="setCount(4, this)">x4</button>
+        </div>
+        <div class="selector-row">
+          <button class="speed-btn active" onclick="setSpeed(4, this)">Обычная</button>
+          <button class="speed-btn" onclick="setSpeed(1.5, this)">Быстрая</button>
         </div>
       </div>
-
       <button class="btn" id="open-btn" onclick="openCase()" disabled>Открыть кейс</button>
-
-      <div class="case-contents" id="contents-box" style="display: none;">
-        <h3>Содержимое кейса:</h3>
-        <div class="contents-grid" id="contents-grid"></div>
-      </div>
     </section>
 
     <section>
-      <h2 style="text-align: center; margin-bottom: 20px;">Кейсы</h2>
       <div class="cases-grid">
         <div class="case-card" onclick="selectCase('bomj')">
-          <div class="case-title">Бомж Кейс</div>
-          <p>Бюджетный выбор</p>
-          <div class="case-price">30 ₽</div>
+          <div class="case-title">Бомж Кейс</div><p style="color:var(--text-muted); font-size:12px;">Бюджетный выбор</p>
+          <img src="img/case_bomj.png" alt="Кейс" class="case-img"><div style="color:var(--success); font-weight:bold;">30 ₽</div>
         </div>
         <div class="case-card" onclick="selectCase('standart')">
-          <div class="case-title">Стандартный</div>
-          <p>Средний шанс</p>
-          <div class="case-price">50 ₽</div>
+          <div class="case-title">Стандартный</div><p style="color:var(--text-muted); font-size:12px;">Средний шанс</p>
+          <img src="img/case_standart.png" alt="Кейс" class="case-img"><div style="color:var(--success); font-weight:bold;">50 ₽</div>
         </div>
         <div class="case-card" onclick="selectCase('major')">
-          <div class="case-title">Мажор Кейс</div>
-          <p>Шанс на Нож!</p>
-          <div class="case-price">100 ₽</div>
+          <div class="case-title">Мажор Кейс</div><p style="color:var(--text-muted); font-size:12px;">Шанс на Нож!</p>
+          <img src="img/case_major.png" alt="Кейс" class="case-img"><div style="color:var(--success); font-weight:bold;">100 ₽</div>
         </div>
       </div>
     </section>
-
-    <section class="inventory-section">
-      <h3>Ваш инвентарь (Выигранные скины)</h3>
-      <div class="inventory-grid" id="inventory"></div>
-    </section>
   </main>
+
+  <!-- Вкладка Апгрейдера -->
+  <main id="view-upgrader" style="display: none;">
+    <div class="upgrader-wrapper">
+      <div class="upg-slot" id="upg-input">
+        <span style="color: #666; font-size: 14px;">Ваш скин<br>(Нажмите в инвентаре снизу)</span>
+      </div>
+      
+      <div class="upg-center">
+        <div class="upg-wheel-container">
+          <div class="upg-rotating-pointer" id="upg-rotating-pointer">
+            <div class="upg-arrow-tip"></div>
+          </div>
+          <div class="upg-wheel" id="upg-wheel"></div>
+          <div class="upg-inner">
+            <div id="upg-chance">0%</div>
+            <button class="btn" id="btn-do-upgrade" onclick="executeUpgrade()" disabled style="padding: 10px 25px; font-size: 14px;">Апгрейд</button>
+            <div id="upg-msg"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="upg-slot" id="upg-target" onclick="openSkinsModal()">
+        <span style="color: #666; font-size: 14px;">Желаемый скин<br>(Нажмите для выбора)</span>
+      </div>
+    </div>
+  </main>
+
+  <section class="inventory-section">
+    <h2>Ваш инвентарь</h2>
+    <div class="inventory-grid" id="inventory">
+      <div style="color:#666; width: 100%; text-align: center;">Инвентарь пуст</div>
+    </div>
+  </section>
+
+  <!-- Модалка Пополнения -->
+  <div class="modal-overlay" id="deposit-modal">
+    <div class="modal">
+      <h3>Пополнение баланса</h3>
+      <input type="number" id="deposit-amount" value="500" min="10">
+      <div class="modal-buttons">
+        <button class="modal-btn confirm" onclick="confirmDeposit()">Оплатить</button>
+        <button class="modal-btn" onclick="document.getElementById('deposit-modal').style.display='none'">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модалка Выбора Желаемого Скина -->
+  <div class="modal-overlay" id="skins-modal">
+    <div class="modal">
+      <h3>Выберите желаемый скин</h3>
+      <div class="skins-grid" id="skins-grid-modal"></div>
+      <button class="modal-btn" style="margin-top: 15px;" onclick="document.getElementById('skins-modal').style.display='none'">Закрыть</button>
+    </div>
+  </div>
 
   <script>
     let balance = 100;
     let selectedCaseKey = null;
-    let isSpinning = false;
-    let openAmount = 1;
+    let isActionActive = false;
     let inventory = [];
+    let openingCount = 1;
+    let spinSpeed = 4;
+    let currentTab = 'cases';
 
     const skinsData = {
       p250: { name: "P250 | Sand Dune", rarity: "blue", price: 10, img: "img/p250.png" },
@@ -301,161 +228,285 @@
       major: { name: "Мажор Кейс", price: 100, items: [skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] }
     };
 
-    function setOpenAmount(amount) {
-      if (isSpinning) return;
-      openAmount = amount;
+    function switchTab(tab) {
+      if (isActionActive) return;
+      currentTab = tab;
+      document.getElementById('view-cases').style.display = tab === 'cases' ? 'block' : 'none';
+      document.getElementById('view-upgrader').style.display = tab === 'upgrader' ? 'block' : 'none';
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      updateInventoryDisplay();
+    }
 
-      const btns = document.querySelectorAll('.count-btn');
-      btns.forEach((btn, index) => {
-        btn.classList.toggle('active', index + 1 === amount);
-      });
-
-      renderRouletteTracks();
-      if (selectedCaseKey) {
-        updateOpenButton();
-        generateTracks(cases[selectedCaseKey].items);
+    function confirmDeposit() {
+      const amt = parseInt(document.getElementById('deposit-amount').value);
+      if (amt > 0) {
+        balance += amt; 
+        document.getElementById('balance').innerText = balance; 
+        if (selectedCaseKey && currentTab === 'cases') selectCase(selectedCaseKey); 
+        document.getElementById('deposit-modal').style.display='none';
       }
     }
 
-    function renderRouletteTracks() {
-      const container = document.getElementById('roulettes-container');
-      container.innerHTML = '';
-      for (let i = 0; i < openAmount; i++) {
-        container.innerHTML += `
-          <div class="roulette-wrapper">
-            <div class="pointer"></div>
-            <div class="roulette-track" id="track-${i}"></div>
-          </div>
-        `;
-      }
+    function setCount(count, btn) {
+      if (isActionActive) return;
+      openingCount = count;
+      document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (selectedCaseKey) selectCase(selectedCaseKey);
+    }
+    function setSpeed(speed, btn) {
+      if (isActionActive) return;
+      spinSpeed = speed;
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     }
 
     function selectCase(caseKey) {
-      if (isSpinning) return;
+      if (isActionActive) return;
       selectedCaseKey = caseKey;
       const currentCase = cases[caseKey];
+      const totalPrice = currentCase.price * openingCount;
       
       document.getElementById('current-case-name').innerText = currentCase.name;
-      updateOpenButton();
-
-      const grid = document.getElementById('contents-grid');
-      grid.innerHTML = '';
-      currentCase.items.forEach(item => {
-        grid.innerHTML += `
-          <div class="item-card ${item.rarity}">
-            <img src="${item.img}" alt="${item.name}">
-            <div class="item-name">${item.name}</div>
-            <div class="item-price">${item.price} ₽</div>
-          </div>
-        `;
-      });
-      document.getElementById('contents-box').style.display = 'block';
-      generateTracks(currentCase.items);
-    }
-
-    function updateOpenButton() {
-      if (!selectedCaseKey) return;
-      const totalPrice = cases[selectedCaseKey].price * openAmount;
-      document.getElementById('open-btn').innerText = `Открыть (${openAmount}x) за ${totalPrice} ₽`;
+      document.getElementById('open-btn').innerText = `Открыть (${totalPrice} ₽)`;
       document.getElementById('open-btn').disabled = balance < totalPrice;
+
+      const container = document.getElementById('roulettes-container');
+      container.innerHTML = '';
+      for (let i = 0; i < openingCount; i++) {
+        container.innerHTML += `<div class="roulette-wrapper"><div class="pointer"></div><div class="roulette-track" id="track-${i}"></div></div>`;
+        generateTrack(currentCase.items, `track-${i}`);
+      }
     }
 
-    function generateTracks(items) {
-      for (let t = 0; t < openAmount; t++) {
-        const track = document.getElementById(`track-${t}`);
-        if (!track) continue;
-        track.style.transition = 'none';
-        track.style.transform = 'translateX(0px)';
-        track.innerHTML = '';
-
-        for (let i = 0; i < 60; i++) {
-          const randomItem = items[Math.floor(Math.random() * items.length)];
-          track.innerHTML += `
-            <div class="item-card ${randomItem.rarity}">
-              <img src="${randomItem.img}" alt="${randomItem.name}">
-              <div class="item-name">${randomItem.name}</div>
-            </div>
-          `;
-        }
+    function generateTrack(items, trackId) {
+      const track = document.getElementById(trackId);
+      track.style.transition = 'none'; 
+      track.style.transform = 'translateX(0px)'; 
+      track.innerHTML = '';
+      for (let i = 0; i < 35; i++) {
+        const item = items[Math.floor(Math.random() * items.length)];
+        track.innerHTML += `<div class="item-card ${item.rarity}"><img src="${item.img}"><div class="item-name">${item.name}</div></div>`;
       }
     }
 
     function openCase() {
-      if (isSpinning || !selectedCaseKey) return;
+      if (isActionActive || !selectedCaseKey) return;
       const currentCase = cases[selectedCaseKey];
-      const totalPrice = currentCase.price * openAmount;
-
-      if (balance < totalPrice) {
-        alert("Недостаточно средств на балансе!");
-        return;
-      }
+      const totalPrice = currentCase.price * openingCount;
+      if (balance < totalPrice) return;
 
       balance -= totalPrice;
       document.getElementById('balance').innerText = balance;
+      isActionActive = true;
       document.getElementById('open-btn').disabled = true;
-      isSpinning = true;
 
       const items = currentCase.items;
-      const winnerIndex = 48; 
-      const cardWidth = 120;
-      const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
-
+      const winnerIndex = 28; const cardWidth = 120; 
+      const targetShift = (winnerIndex * cardWidth) - (document.querySelector('.roulette-wrapper').offsetWidth / 2) + (cardWidth / 2);
       const winners = [];
 
-      for (let t = 0; t < openAmount; t++) {
+      for (let i = 0; i < openingCount; i++) {
         const winnerItem = items[Math.floor(Math.random() * items.length)];
         winners.push(winnerItem);
-
-        const track = document.getElementById(`track-${t}`);
+        const track = document.getElementById(`track-${i}`);
         const cards = track.getElementsByClassName('item-card');
         
         cards[winnerIndex].className = `item-card ${winnerItem.rarity}`;
-        cards[winnerIndex].innerHTML = `
-          <img src="${winnerItem.img}" alt="${winnerItem.name}">
-          <div class="item-name">${winnerItem.name}</div>
-        `;
-
-        const targetShift = (winnerIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2);
-
-        setTimeout(() => {
-          track.style.transition = 'transform 7s cubic-bezier(0.08, 0.9, 0.1, 1)';
-          track.style.transform = `translateX(-${targetShift}px)`;
-        }, 50);
+        cards[winnerIndex].innerHTML = `<img src="${winnerItem.img}"><div class="item-name">${winnerItem.name}</div>`;
+        
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(0px)';
+        void track.offsetWidth; 
+        
+        track.style.transition = `transform ${spinSpeed}s cubic-bezier(0.1, 1, 0.1, 1)`; 
+        track.style.transform = `translateX(-${targetShift}px)`;
       }
 
       setTimeout(() => {
-        isSpinning = false;
-        winners.forEach(item => inventory.push(item));
+        isActionActive = false;
+        document.getElementById('open-btn').disabled = balance < (currentCase.price * openingCount);
+        winners.forEach(w => inventory.push(w));
         updateInventoryDisplay();
-        updateOpenButton();
-      }, 7100);
+      }, (spinSpeed * 1000) + 100);
     }
 
     function updateInventoryDisplay() {
       const invGrid = document.getElementById('inventory');
+      if(inventory.length === 0) {
+          invGrid.innerHTML = '<div style="color:#666; width: 100%; text-align: center;">Инвентарь пуст</div>';
+          return;
+      }
       invGrid.innerHTML = '';
       inventory.forEach((item, index) => {
+        let isSelected = (currentTab === 'upgrader' && upgInputIndex === index);
+        let extraContent = '';
+        
+        if (currentTab === 'cases') {
+          extraContent = `<button class="btn-sell" onclick="event.stopPropagation(); sellItem(${index})" ${isActionActive ? 'disabled':''}>Продать</button>`;
+        }
+
         invGrid.innerHTML += `
-          <div class="item-card ${item.rarity}" style="height: 155px;">
-            <img src="${item.img}" alt="${item.name}">
+        <div class="item-card ${item.rarity} ${isSelected ? 'selected-for-upg' : ''}" style="height: ${currentTab === 'cases' ? '160px' : '130px'};" onclick="handleInventoryClick(${index})">
+            <img src="${item.img}">
             <div class="item-name">${item.name}</div>
             <div class="item-price">${item.price} ₽</div>
-            <button class="btn-sell" onclick="sellItem(${index})">Продать</button>
-          </div>
-        `;
+            ${extraContent}
+        </div>`;
       });
+      if(upgInputIndex !== null && !inventory[upgInputIndex]) clearUpgInput();
+    }
+
+    function handleInventoryClick(index) {
+      if (isActionActive) return;
+      if (currentTab === 'upgrader') {
+        if (upgInputIndex === index) {
+          clearUpgInput();
+        } else {
+          selectUpgInput(index);
+        }
+      }
     }
 
     function sellItem(index) {
-      const item = inventory[index];
-      balance += item.price;
+      if (isActionActive) return;
+      balance += inventory[index].price;
       document.getElementById('balance').innerText = balance;
+      if(upgInputIndex === index) clearUpgInput();
       inventory.splice(index, 1);
+      if(upgInputIndex !== null && index < upgInputIndex) upgInputIndex--;
+      
       updateInventoryDisplay();
-
-      if (selectedCaseKey && !isSpinning) {
-        updateOpenButton();
+      if (selectedCaseKey && currentTab === 'cases') { 
+        document.getElementById('open-btn').disabled = balance < (cases[selectedCaseKey].price * openingCount); 
       }
+    }
+
+    /* --- Логика Апгрейдера --- */
+    let upgInputIndex = null;
+    let upgTargetItem = null;
+
+    function selectUpgInput(index) {
+      upgInputIndex = index;
+      const item = inventory[index];
+      const slot = document.getElementById('upg-input');
+      slot.innerHTML = `<div class="item-card ${item.rarity}"><img src="${item.img}"><div class="item-name">${item.name}</div><div class="item-price">${item.price} ₽</div></div>`;
+      slot.classList.add('active-slot');
+      updateInventoryDisplay();
+      calculateUpgChance();
+    }
+
+    function clearUpgInput() {
+      upgInputIndex = null;
+      const slot = document.getElementById('upg-input');
+      slot.innerHTML = '<span style="color: #666; font-size: 14px;">Ваш скин<br>(Нажмите в инвентаре снизу)</span>';
+      slot.classList.remove('active-slot');
+      updateInventoryDisplay();
+      calculateUpgChance();
+    }
+
+    function openSkinsModal() {
+      if (isActionActive) return;
+      const grid = document.getElementById('skins-grid-modal');
+      grid.innerHTML = '';
+      Object.values(skinsData).forEach((item, index) => {
+        grid.innerHTML += `<div class="item-card ${item.rarity}" onclick="setUpgTarget('${Object.keys(skinsData)[index]}')"><img src="${item.img}"><div class="item-name">${item.name}</div><div class="item-price">${item.price} ₽</div></div>`;
+      });
+      document.getElementById('skins-modal').style.display = 'flex';
+    }
+
+    function setUpgTarget(skinKey) {
+      upgTargetItem = skinsData[skinKey];
+      const slot = document.getElementById('upg-target');
+      slot.innerHTML = `<div class="item-card ${upgTargetItem.rarity}"><img src="${upgTargetItem.img}"><div class="item-name">${upgTargetItem.name}</div><div class="item-price">${upgTargetItem.price} ₽</div></div>`;
+      slot.classList.add('active-slot');
+      document.getElementById('skins-modal').style.display = 'none';
+      calculateUpgChance();
+    }
+
+    function calculateUpgChance() {
+      const chanceText = document.getElementById('upg-chance');
+      const msg = document.getElementById('upg-msg');
+      const wheel = document.getElementById('upg-wheel');
+      const rotatingPointer = document.getElementById('upg-rotating-pointer');
+      
+      msg.innerText = '';
+      rotatingPointer.style.transition = 'none';
+      rotatingPointer.style.transform = 'rotate(0deg)';
+
+      if (upgInputIndex !== null && upgTargetItem !== null) {
+        // Добавляем бонус +15% к базовому шансу, максимум 100%
+        let chance = (inventory[upgInputIndex].price / upgTargetItem.price) * 100 + 15;
+        if (chance > 100) chance = 100;
+        
+        chanceText.innerText = chance.toFixed(1) + '%';
+        chanceText.style.color = chance < 30 ? 'var(--fail)' : (chance > 70 ? 'var(--success)' : '#f39c12');
+        
+        const chanceAngle = (chance / 100) * 360;
+        wheel.style.background = `conic-gradient(var(--success) 0deg, var(--success) ${chanceAngle}deg, #2a3447 ${chanceAngle}deg, #2a3447 360deg)`;
+        
+        document.getElementById('btn-do-upgrade').disabled = false;
+      } else {
+        chanceText.innerText = '0%';
+        chanceText.style.color = '#fff';
+        wheel.style.background = 'conic-gradient(#2a3447 0deg, #2a3447 360deg)';
+        document.getElementById('btn-do-upgrade').disabled = true;
+      }
+    }
+
+    function executeUpgrade() {
+      if (upgInputIndex === null || upgTargetItem === null || isActionActive) return;
+      isActionActive = true;
+      document.getElementById('btn-do-upgrade').disabled = true;
+      document.getElementById('upg-msg').innerText = 'Вращение...';
+      document.getElementById('upg-msg').style.color = '#fff';
+
+      const inputItem = inventory[upgInputIndex];
+      // Учитываем повышенный шанс (+15%) и в логике розыгрыша
+      let chance = (inputItem.price / upgTargetItem.price) + 0.15;
+      if (chance > 1) chance = 1;
+
+      const chanceAngle = chance * 360;
+      const isSuccess = Math.random() < chance;
+      
+      let targetAngle;
+      if (isSuccess) {
+        targetAngle = 2 + Math.random() * (chanceAngle - 4);
+        if (chanceAngle < 4) targetAngle = chanceAngle / 2;
+      } else {
+        targetAngle = chanceAngle + 2 + Math.random() * (360 - chanceAngle - 4);
+      }
+
+      const spins = 360 * 5; 
+      const finalRotation = spins + targetAngle; 
+      
+      const rotatingPointer = document.getElementById('upg-rotating-pointer');
+      rotatingPointer.style.transition = 'none';
+      rotatingPointer.style.transform = 'rotate(0deg)';
+      void rotatingPointer.offsetWidth;
+      
+      // Время вращения увеличено до 8 секунд
+      rotatingPointer.style.transition = 'transform 8s cubic-bezier(0.1, 1, 0.1, 1)';
+      rotatingPointer.style.transform = `rotate(${finalRotation}deg)`;
+
+      setTimeout(() => {
+        isActionActive = false;
+        const msg = document.getElementById('upg-msg');
+        if (isSuccess) {
+          msg.innerText = 'УСПЕШНО!';
+          msg.style.color = 'var(--success)';
+          inventory.splice(upgInputIndex, 1);
+          inventory.push(upgTargetItem);
+        } else {
+          msg.innerText = 'ПРОВАЛ!';
+          msg.style.color = 'var(--fail)';
+          inventory.splice(upgInputIndex, 1);
+        }
+        
+        clearUpgInput();
+        updateInventoryDisplay();
+      }, 8100);
     }
   </script>
 </body>
