@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LYDIK — Симулятор открытия кейсов CS2</title>
+  <style>
+    :root {
+      --bg-color: #0b0e14;
+      --card-bg: #151a23;
+      --accent: #ff8c00;
+      --accent-hover: #ffa500;
+      --text: #ffffff;
+      --text-muted: #8a94a6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text); padding-bottom: 50px; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background-color: var(--card-bg);
+      border-bottom: 2px solid #1f2633;
+    }
+    .logo { font-size: 24px; font-weight: bold; color: var(--accent); letter-spacing: 2px; }
+    .balance-box {
+      font-size: 18px;
+      background: #0b0e14;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+    }
+    #balance { color: #00ff88; font-weight: bold; }
+
+    .opening-zone {
+      max-width: 850px;
+      margin: 30px auto;
+      text-align: center;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .roulette-wrapper {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      background: #0b0e14;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 1px solid #2a3447;
+    }
+    .pointer {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent);
+      z-index: 10;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .roulette-track {
+      display: flex;
+      position: absolute;
+      left: 0;
+      top: 10px;
+      transition: transform 4s cubic-bezier(0.1, 1, 0.1, 1);
+    }
+
+    .item-card {
+      width: 110px;
+      height: 130px;
+      margin: 0 5px;
+      background: #1a212d;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      flex-shrink: 0;
+      font-size: 11px;
+      text-align: center;
+      border-bottom: 4px solid #888;
+    }
+    .item-card img {
+      width: 95px;
+      height: 65px;
+      object-fit: contain;
+      margin-top: 5px;
+      filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6));
+    }
+    .item-card .item-name {
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .item-card .item-price {
+      color: #00ff88;
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    .item-card.blue { border-color: #4b69ff; }
+    .item-card.purple { border-color: #d32ce6; }
+    .item-card.pink { border-color: #eb4b4b; }
+    .item-card.gold { border-color: #ffd700; }
+
+    .btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn:hover { background: var(--accent-hover); transform: scale(1.05); }
+    .btn:disabled { background: #444; cursor: not-allowed; transform: none; }
+
+    .btn-sell {
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
+    }
+    .btn-sell:hover { background: #c0392b; }
+
+    .case-contents {
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid #2a3447;
+    }
+    .case-contents h3 {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .contents-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .case-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+    .case-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+    .case-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+    .case-price { color: #00ff88; font-size: 16px; margin-top: 10px; }
+
+    .inventory-section {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .inventory-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">LYDIK</div>
+    <div class="balance-box">Баланс: <span id="balance">100</span> ₽</div>
+  </header>
+
+  <main>
+    <section class="opening-zone">
+      <h2 id="current-case-name">Выберите кейс для открытия</h2>
+      <div class="roulette-wrapper">
+        <div class="pointer"></div>
+        <div class="roulette-track" id="track"></div>
+      </div>
+      <button class="btn" id="open-btn" onclick="openCase()" disabled>Открыть кейс</button>
+
+      <div class="case-contents" id="contents-box" style="display: none;">
+        <h3>Содержимое кейса:</h3>
+        <div class="contents-grid" id="contents-grid"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="text-align: center; margin-bottom: 20px;">Кейсы</h2>
+      <div class="cases-grid">
+        <div class="case-card" onclick="selectCase('bomj')">
+          <div class="case-title">Бомж Кейс</div>
+          <p>Бюджетный выбор</p>
+          <div class="case-price">30 ₽</div>
+        </div>
+        <div class="case-card" onclick="selectCase('standart')">
+          <div class="case-title">Стандартный</div>
+          <p>Средний шанс</p>
+          <div class="case-price">50 ₽</div>
+        </div>
+        <div class="case-card" onclick="selectCase('major')">
+          <div class="case-title">Мажор Кейс</div>
+          <p>Шанс на Нож!</p>
+          <div class="case-price">100 ₽</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="inventory-section">
+      <h3>Ваш инвентарь (Выигранные скины)</h3>
+      <div class="inventory-grid" id="inventory"></div>
+    </section>
+  </main>
+  <script>
+    let balance = 100;
+    let selectedCaseKey = null;
+    let isSpinning = false;
+    let inventory = [];
+
+    const skinsData = {
+      p250: { name: "P250 | Sand Dune", rarity: "blue", price: 10, img: "img/p250.png" },
+      glock: { name: "Glock-18 | Water", rarity: "purple", price: 35, img: "img/glock.png" },
+      m4a4: { name: "M4A4 | Evil Daimyo", rarity: "purple", price: 65, img: "img/m4a4.png" },
+      ak47: { name: "AK-47 | Redline", rarity: "pink", price: 180, img: "img/ak47.png" },
+      awp: { name: "AWP | Hyper Beast", rarity: "pink", price: 250, img: "img/awp.png" },
+      karambit: { name: "★ Karambit | Fade", rarity: "gold", price: 1500, img: "img/karambit.png" }
+    };
+
+    const cases = {
+      bomj: { name: "Бомж Кейс", price: 30, items: [skinsData.p250, skinsData.glock, skinsData.m4a4] },
+      standart: { name: "Стандартный", price: 50, items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47] },
+      major: { name: "Мажор Кейс", price: 100, items: [skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] }
+    };
+
+    function selectCase(caseKey) {
+      if (isSpinning) return;
+      selectedCaseKey = caseKey;
+      const currentCase = cases[caseKey];
+      
+      document.getElementById('current-case-name').innerText = currentCase.name;
+      document.getElementById('open-btn').innerText = `Открыть кейс (${currentCase.price} ₽)`;
+      document.getElementById('open-btn').disabled = balance < currentCase.price;
+
+      const grid = document.getElementById('contents-grid');
+      grid.innerHTML = '';
+      currentCase.items.forEach(item => {
+        grid.innerHTML += `
+          <div class="item-card ${item.rarity}">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} ₽</div>
+          </div>
+        `;
+      });
+      document.getElementById('contents-box').style.display = 'block';
+      generateTrack(currentCase.items);
+    }
+
+    function generateTrack(items) {
+      const track = document.getElementById('track');
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(0px)';
+      track.innerHTML = '';
+
+      for (let i = 0; i < 35; i++) {
+        const randomItem = items[Math.floor(Math.random() * items.length)];
+        track.innerHTML += `
+          <div class="item-card ${randomItem.rarity}">
+            <img src="${randomItem.img}" alt="${randomItem.name}">
+            <div class="item-name">${randomItem.name}</div>
+          </div>
+        `;
+      }
+    }
+
+    function openCase() {
+      if (isSpinning || !selectedCaseKey) return;
+      const currentCase = cases[selectedCaseKey];
+
+      if (balance < currentCase.price) {
+        alert("Недостаточно средств на балансе!");
+        return;
+      }
+
+      balance -= currentCase.price;
+      document.getElementById('balance').innerText = balance;
+      document.getElementById('open-btn').disabled = true;
+      isSpinning = true;
+
+      const items = currentCase.items;
+      const winnerIndex = 28; 
+      const winnerItem = items[Math.floor(Math.random() * items.length)];
+
+      const track = document.getElementById('track');
+      const cards = track.getElementsByClassName('item-card');
+      cards[winnerIndex].className = `item-card ${winnerItem.rarity}`;
+      cards[winnerIndex].innerHTML = `
+        <img src="${winnerItem.img}" alt="${winnerItem.name}">
+        <div class="item-name">${winnerItem.name}</div>
+      `;
+
+      const cardWidth = 120; 
+      const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
+      const targetShift = (winnerIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2);
+
+      setTimeout(() => {
+        track.style.transition = 'transform 4s cubic-bezier(0.1, 1, 0.1, 1)';
+        track.style.transform = `translateX(-${targetShift}px)`;
+      }, 50);
+
+      setTimeout(() => {
+        isSpinning = false;
+        document.getElementById('open-btn').disabled = balance < currentCase.price;
+        inventory.push(winnerItem);
+        updateInventoryDisplay();
+      }, 4100);
+    }
+
+    function updateInventoryDisplay() {
+      const invGrid = document.getElementById('inventory');
+      invGrid.innerHTML = '';
+      inventory.forEach((item, index) => {
+        invGrid.innerHTML += `
+          <div class="item-card ${item.rarity}" style="height: 155px;">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} ₽</div>
+            <button class="btn-sell" onclick="sellItem(${index})">Продать</button>
+          </div>
+        `;
+      });
+    }
+
+    function sellItem(index) {
+      const item = inventory[index];
+      balance += item.price;
+      document.getElementById('balance').innerText = balance;
+      inventory.splice(index, 1);
+      updateInventoryDisplay();
+
+      if (selectedCaseKey && !isSpinning) {
+        document.getElementById('open-btn').disabled = balance < cases[selectedCaseKey].price;
+      }
+    }
+  </script>
+</body>
+</html>
