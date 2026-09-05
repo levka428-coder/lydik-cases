@@ -89,7 +89,7 @@
     /* Мобильная адаптация */
     @media (max-width: 768px) {
       header { padding: 12px 15px; justify-content: center; }
-      .logo { display: none; } /* Скрываем логотип на мобильных, чтобы освободить место для вкладок */
+      .logo { display: none; }
       .nav-tabs { order: 1; width: 100%; justify-content: center; }
       .balance-box { order: 2; font-size: 14px; padding: 6px 14px; }
       
@@ -328,9 +328,14 @@
       document.getElementById('open-btn').disabled = true;
 
       const items = currentCase.items;
-      const winnerIndex = 28; const cardWidth = 120; 
-      const targetShift = (winnerIndex * cardWidth) - (document.querySelector('.roulette-wrapper').offsetWidth / 2) + (cardWidth / 2);
+      const winnerIndex = 28; 
+      const cardWidth = 120; 
+      const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
+      const baseShift = (winnerIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2);
       
+      const overscroll = 40; 
+      const targetShift = baseShift + overscroll;
+
       lastWonItems = [];
 
       for (let i = 0; i < openingCount; i++) {
@@ -346,15 +351,23 @@
         track.style.transform = 'translateX(0px)';
         void track.offsetWidth; 
         
-        track.style.transition = `transform ${spinSpeed}s cubic-bezier(0.15, 0.85, 0.15, 1.0)`; 
+        track.style.transition = `transform ${spinSpeed}s cubic-bezier(0.08, 0.75, 0.12, 1.05)`; 
         track.style.transform = `translateX(-${targetShift}px)`;
       }
+
+      setTimeout(() => {
+        for (let i = 0; i < openingCount; i++) {
+          const track = document.getElementById(`track-${i}`);
+          track.style.transition = 'transform 0.35s ease-out';
+          track.style.transform = `translateX(-${baseShift}px)`;
+        }
+      }, spinSpeed * 1000);
 
       setTimeout(() => {
         isActionActive = false;
         document.getElementById('open-btn').disabled = balance < (currentCase.price * openingCount);
         showWinModal(lastWonItems);
-      }, (spinSpeed * 1000) + 100);
+      }, (spinSpeed * 1000) + 380);
     }
 
     function showWinModal(items) {
