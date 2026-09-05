@@ -45,14 +45,20 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     
+    .multi-roulette-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
     .roulette-wrapper {
       position: relative;
       width: 100%;
-      height: 150px;
+      height: 140px;
       overflow: hidden;
       background: #0b0e14;
       border-radius: 8px;
-      margin: 20px 0;
       border: 1px solid #2a3447;
     }
     .pointer {
@@ -70,8 +76,30 @@
       display: flex;
       position: absolute;
       left: 0;
-      top: 10px;
-      transition: transform 4s cubic-bezier(0.1, 1, 0.1, 1);
+      top: 5px;
+      /* Медленная анимация: 7 секунд */
+      transition: transform 7s cubic-bezier(0.08, 0.9, 0.1, 1);
+    }
+
+    .amount-selector {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .count-btn {
+      background: #1a212d;
+      color: var(--text);
+      border: 1px solid #2a3447;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .count-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
     }
 
     .item-card {
@@ -201,10 +229,21 @@
   <main>
     <section class="opening-zone">
       <h2 id="current-case-name">Выберите кейс для открытия</h2>
-      <div class="roulette-wrapper">
-        <div class="pointer"></div>
-        <div class="roulette-track" id="track"></div>
+      
+      <div class="amount-selector">
+        <button class="count-btn active" onclick="setOpenAmount(1)">1x</button>
+        <button class="count-btn" onclick="setOpenAmount(2)">2x</button>
+        <button class="count-btn" onclick="setOpenAmount(3)">3x</button>
+        <button class="count-btn" onclick="setOpenAmount(4)">4x</button>
       </div>
+
+      <div class="multi-roulette-container" id="roulettes-container">
+        <div class="roulette-wrapper">
+          <div class="pointer"></div>
+          <div class="roulette-track" id="track-0"></div>
+        </div>
+      </div>
+
       <button class="btn" id="open-btn" onclick="openCase()" disabled>Открыть кейс</button>
 
       <div class="case-contents" id="contents-box" style="display: none;">
@@ -239,10 +278,12 @@
       <div class="inventory-grid" id="inventory"></div>
     </section>
   </main>
+
   <script>
     let balance = 100;
     let selectedCaseKey = null;
     let isSpinning = false;
+    let openAmount = 1;
     let inventory = [];
 
     const skinsData = {
@@ -260,14 +301,42 @@
       major: { name: "Мажор Кейс", price: 100, items: [skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] }
     };
 
+    function setOpenAmount(amount) {
+      if (isSpinning) return;
+      openAmount = amount;
+
+      const btns = document.querySelectorAll('.count-btn');
+      btns.forEach((btn, index) => {
+        btn.classList.toggle('active', index + 1 === amount);
+      });
+
+      renderRouletteTracks();
+      if (selectedCaseKey) {
+        updateOpenButton();
+        generateTracks(cases[selectedCaseKey].items);
+      }
+    }
+
+    function renderRouletteTracks() {
+      const container = document.getElementById('roulettes-container');
+      container.innerHTML = '';
+      for (let i = 0; i < openAmount; i++) {
+        container.innerHTML += `
+          <div class="roulette-wrapper">
+            <div class="pointer"></div>
+            <div class="roulette-track" id="track-${i}"></div>
+          </div>
+        `;
+      }
+    }
+
     function selectCase(caseKey) {
       if (isSpinning) return;
       selectedCaseKey = caseKey;
       const currentCase = cases[caseKey];
       
       document.getElementById('current-case-name').innerText = currentCase.name;
-      document.getElementById('open-btn').innerText = `Открыть кейс (${currentCase.price} ₽)`;
-      document.getElementById('open-btn').disabled = balance < currentCase.price;
+      updateOpenButton();
 
       const grid = document.getElementById('contents-grid');
       grid.innerHTML = '';
@@ -281,67 +350,85 @@
         `;
       });
       document.getElementById('contents-box').style.display = 'block';
-      generateTrack(currentCase.items);
+      generateTracks(currentCase.items);
     }
 
-    function generateTrack(items) {
-      const track = document.getElementById('track');
-      track.style.transition = 'none';
-      track.style.transform = 'translateX(0px)';
-      track.innerHTML = '';
+    function updateOpenButton() {
+      if (!selectedCaseKey) return;
+      const totalPrice = cases[selectedCaseKey].price * openAmount;
+      document.getElementById('open-btn').innerText = `Открыть (${openAmount}x) за ${totalPrice} ₽`;
+      document.getElementById('open-btn').disabled = balance < totalPrice;
+    }
 
-      for (let i = 0; i < 35; i++) {
-        const randomItem = items[Math.floor(Math.random() * items.length)];
-        track.innerHTML += `
-          <div class="item-card ${randomItem.rarity}">
-            <img src="${randomItem.img}" alt="${randomItem.name}">
-            <div class="item-name">${randomItem.name}</div>
-          </div>
-        `;
+    function generateTracks(items) {
+      for (let t = 0; t < openAmount; t++) {
+        const track = document.getElementById(`track-${t}`);
+        if (!track) continue;
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(0px)';
+        track.innerHTML = '';
+
+        for (let i = 0; i < 60; i++) {
+          const randomItem = items[Math.floor(Math.random() * items.length)];
+          track.innerHTML += `
+            <div class="item-card ${randomItem.rarity}">
+              <img src="${randomItem.img}" alt="${randomItem.name}">
+              <div class="item-name">${randomItem.name}</div>
+            </div>
+          `;
+        }
       }
     }
 
     function openCase() {
       if (isSpinning || !selectedCaseKey) return;
       const currentCase = cases[selectedCaseKey];
+      const totalPrice = currentCase.price * openAmount;
 
-      if (balance < currentCase.price) {
+      if (balance < totalPrice) {
         alert("Недостаточно средств на балансе!");
         return;
       }
 
-      balance -= currentCase.price;
+      balance -= totalPrice;
       document.getElementById('balance').innerText = balance;
       document.getElementById('open-btn').disabled = true;
       isSpinning = true;
 
       const items = currentCase.items;
-      const winnerIndex = 28; 
-      const winnerItem = items[Math.floor(Math.random() * items.length)];
-
-      const track = document.getElementById('track');
-      const cards = track.getElementsByClassName('item-card');
-      cards[winnerIndex].className = `item-card ${winnerItem.rarity}`;
-      cards[winnerIndex].innerHTML = `
-        <img src="${winnerItem.img}" alt="${winnerItem.name}">
-        <div class="item-name">${winnerItem.name}</div>
-      `;
-
-      const cardWidth = 120; 
+      const winnerIndex = 48; 
+      const cardWidth = 120;
       const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
-      const targetShift = (winnerIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2);
 
-      setTimeout(() => {
-        track.style.transition = 'transform 4s cubic-bezier(0.1, 1, 0.1, 1)';
-        track.style.transform = `translateX(-${targetShift}px)`;
-      }, 50);
+      const winners = [];
+
+      for (let t = 0; t < openAmount; t++) {
+        const winnerItem = items[Math.floor(Math.random() * items.length)];
+        winners.push(winnerItem);
+
+        const track = document.getElementById(`track-${t}`);
+        const cards = track.getElementsByClassName('item-card');
+        
+        cards[winnerIndex].className = `item-card ${winnerItem.rarity}`;
+        cards[winnerIndex].innerHTML = `
+          <img src="${winnerItem.img}" alt="${winnerItem.name}">
+          <div class="item-name">${winnerItem.name}</div>
+        `;
+
+        const targetShift = (winnerIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2);
+
+        setTimeout(() => {
+          track.style.transition = 'transform 7s cubic-bezier(0.08, 0.9, 0.1, 1)';
+          track.style.transform = `translateX(-${targetShift}px)`;
+        }, 50);
+      }
 
       setTimeout(() => {
         isSpinning = false;
-        document.getElementById('open-btn').disabled = balance < currentCase.price;
-        inventory.push(winnerItem);
+        winners.forEach(item => inventory.push(item));
         updateInventoryDisplay();
-      }, 4100);
+        updateOpenButton();
+      }, 7100);
     }
 
     function updateInventoryDisplay() {
@@ -367,7 +454,7 @@
       updateInventoryDisplay();
 
       if (selectedCaseKey && !isSpinning) {
-        document.getElementById('open-btn').disabled = balance < cases[selectedCaseKey].price;
+        updateOpenButton();
       }
     }
   </script>
