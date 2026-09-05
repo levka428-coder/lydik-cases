@@ -9,18 +9,18 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background-color: var(--bg-color); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
     
-    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(21, 26, 35, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 100; position: relative; }
-    .logo { font-size: 26px; font-weight: 900; background: linear-gradient(45deg, #ff8c00, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(21, 26, 35, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 100; position: relative; gap: 15px; flex-wrap: wrap; }
+    .logo { font-size: 24px; font-weight: 900; background: linear-gradient(45deg, #ff8c00, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
     
-    .nav-tabs { display: flex; gap: 15px; position: absolute; left: 50%; transform: translateX(-50%); }
-    .nav-btn { background: transparent; color: var(--text-muted); border: 1px solid transparent; font-size: 16px; font-weight: bold; padding: 8px 20px; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+    .nav-tabs { display: flex; gap: 10px; }
+    .nav-btn { background: transparent; color: var(--text-muted); border: 1px solid transparent; font-size: 15px; font-weight: bold; padding: 6px 16px; cursor: pointer; border-radius: 8px; transition: 0.3s; }
     .nav-btn:hover { color: var(--text); }
     .nav-btn.active { color: var(--accent); border: 1px solid rgba(255, 140, 0, 0.4); background: rgba(255, 140, 0, 0.1); }
     
-    .balance-box { font-size: 16px; background: rgba(11, 14, 20, 0.8); padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(255, 140, 0, 0.4); cursor: pointer; }
+    .balance-box { font-size: 15px; background: rgba(11, 14, 20, 0.8); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255, 140, 0, 0.4); cursor: pointer; white-space: nowrap; }
     #balance { color: var(--success); font-weight: bold; }
 
-    .btn { background: linear-gradient(135deg, var(--accent), #ff5500); color: #000; border: none; padding: 14px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .btn { background: linear-gradient(135deg, var(--accent), #ff5500); color: #000; border: none; padding: 14px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; width: 100%; max-width: 300px; }
     .btn:hover:not(:disabled) { transform: scale(1.03); box-shadow: 0 0 15px rgba(255,140,0,0.4); }
     .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
@@ -34,57 +34,72 @@
     
     .btn-sell { background: #e74c3c; color: #fff; border: none; padding: 4px 0; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 4px; }
 
-    .section-zone { max-width: 900px; margin: 25px auto; text-align: center; background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .section-zone { max-width: 900px; margin: 20px auto; text-align: center; background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
     .multi-roulette-container { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
     .roulette-wrapper { position: relative; width: 100%; height: 140px; overflow: hidden; background: rgba(11, 14, 20, 0.9); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); }
     .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
     .roulette-track { display: flex; position: absolute; left: 0; top: 5px; }
     
-    .controls-container { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; }
-    .selector-row { display: flex; align-items: center; gap: 10px; }
-    .count-btn, .speed-btn { background: rgba(26, 33, 45, 0.8); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .controls-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .selector-row { display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .count-btn, .speed-btn { background: rgba(26, 33, 45, 0.8); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
     .count-btn.active, .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1000px; margin: 30px auto; padding: 0 20px; }
     .case-card { background: var(--card-bg); border-radius: 14px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
     .case-card:hover { border-color: var(--accent); transform: translateY(-5px); }
     .case-visual { width: 140px; height: 110px; display: flex; align-items: center; justify-content: center; margin: 12px auto; background: rgba(0,0,0,0.3); border-radius: 10px; }
     .case-visual img { max-width: 85%; max-height: 85%; object-fit: contain; }
 
-    .upgrader-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 40px auto; padding: 40px; background: var(--card-bg); border-radius: 16px; position: relative; }
-    .upg-slot { width: 160px; height: 200px; background: rgba(11, 14, 20, 0.8); border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px; cursor: pointer; transition: 0.2s; }
+    .upgrader-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 30px auto; padding: 30px 20px; background: var(--card-bg); border-radius: 16px; position: relative; gap: 15px; }
+    .upg-slot { width: 140px; height: 180px; background: rgba(11, 14, 20, 0.8); border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
     .upg-slot:hover { border-color: rgba(255, 140, 0, 0.5); }
     .upg-slot.active-slot { border-color: var(--accent); background: rgba(21, 26, 35, 1); cursor: default; }
     .upg-slot .item-card { margin: 0; width: 100%; height: 100%; border: none; background: transparent; cursor: default; }
     
-    .upg-center { position: relative; display: flex; flex-direction: column; align-items: center; }
-    .upg-wheel-container { width: 290px; height: 290px; border-radius: 50%; border: 6px solid #141a24; position: relative; background: #1a2230; box-shadow: 0 0 25px rgba(0,0,0,0.5); }
+    .upg-center { position: relative; display: flex; flex-direction: column; align-items: center; flex-grow: 1; }
+    .upg-wheel-container { width: 240px; height: 240px; border-radius: 50%; border: 6px solid #141a24; position: relative; background: #1a2230; box-shadow: 0 0 25px rgba(0,0,0,0.5); }
     .upg-wheel { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#1b2432 0deg, #1b2432 360deg); overflow: hidden; transition: background 0.3s ease; }
     .upg-rotating-pointer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; pointer-events: none; z-index: 5; transform-origin: center center; }
-    .upg-arrow-tip { position: absolute; top: -24px; left: calc(50% - 11px); width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-bottom: 30px solid #ffaa33; filter: drop-shadow(0 0 5px rgba(255, 170, 51, 0.8)); }
+    .upg-arrow-tip { position: absolute; top: -20px; left: calc(50% - 9px); width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 25px solid #ffaa33; filter: drop-shadow(0 0 5px rgba(255, 170, 51, 0.8)); }
     .upg-inner { position: absolute; top: 13%; left: 13%; width: 74%; height: 74%; background: #0c1017; border-radius: 50%; border: 4px solid #1b2432; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 6; }
     
-    #upg-chance { font-size: 32px; font-weight: bold; color: #fff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
-    #upg-msg { font-size: 14px; font-weight: bold; position: absolute; bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+    #upg-chance { font-size: 26px; font-weight: bold; color: #fff; margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    #upg-msg { font-size: 12px; font-weight: bold; position: absolute; bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
 
-    .upg-lightning-btn { position: absolute; top: 15px; right: 15px; background: rgba(26, 33, 45, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 20px; width: 42px; height: 42px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .upg-lightning-btn { position: absolute; top: 10px; right: 10px; background: rgba(26, 33, 45, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 18px; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; z-index: 10; }
     .upg-lightning-btn:hover { border-color: var(--accent); color: var(--text); }
     .upg-lightning-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
-    .inventory-section { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-    .inventory-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; min-height: 120px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; }
+    .inventory-section { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .inventory-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; min-height: 120px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; }
 
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-    .modal { background: rgba(21, 26, 35, 0.95); border: 1px solid rgba(255, 140, 0, 0.3); padding: 25px; border-radius: 16px; text-align: center; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+    .modal { background: rgba(21, 26, 35, 0.95); border: 1px solid rgba(255, 140, 0, 0.3); padding: 20px; border-radius: 16px; text-align: center; width: 100%; max-width: 340px; }
     .modal input { width: 100%; padding: 10px; background: #0b0e14; border: 1px solid #2a3447; border-radius: 8px; color: var(--success); font-size: 18px; font-weight: bold; text-align: center; outline: none; margin: 15px 0; }
     .modal-buttons { display: flex; gap: 10px; justify-content: center; }
-    .modal-btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: #333; color: #fff; transition: 0.2s; }
+    .modal-btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: #333; color: #fff; transition: 0.2s; width: 100%; }
     .modal-btn:hover { background: #444; }
     .modal-btn.confirm { background: var(--accent); color: #000; }
     .modal-btn.confirm:hover { background: #ff9f1a; }
     
-    #skins-modal .modal { width: 650px; max-width: 95vw; }
-    .skins-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-height: 400px; overflow-y: auto; margin-top: 15px; }
+    #skins-modal .modal { max-width: 500px; }
+    .skins-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 350px; overflow-y: auto; margin-top: 15px; }
+
+    /* Мобильная адаптация */
+    @media (max-width: 768px) {
+      header { padding: 12px 15px; justify-content: center; }
+      .logo { display: none; } /* Скрываем логотип на мобильных, чтобы освободить место для вкладок */
+      .nav-tabs { order: 1; width: 100%; justify-content: center; }
+      .balance-box { order: 2; font-size: 14px; padding: 6px 14px; }
+      
+      .upgrader-wrapper { flex-direction: column; padding: 20px 10px; }
+      .upg-slot { width: 100%; height: 100px; flex-direction: row; justify-content: space-around; }
+      .upg-slot .item-card { width: 80px; height: 90px; }
+      .upg-wheel-container { width: 200px; height: 200px; }
+      
+      .section-zone { padding: 15px 10px; margin: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -99,7 +114,7 @@
 
   <main id="view-cases">
     <section class="section-zone">
-      <h2 id="current-case-name">Выберите кейс для открытия</h2>
+      <h2 id="current-case-name" style="font-size: 20px; margin-bottom: 15px;">Выберите кейс для открытия</h2>
       <div class="multi-roulette-container" id="roulettes-container">
         <div class="roulette-wrapper"><div class="pointer"></div><div class="roulette-track" id="track-0"></div></div>
       </div>
@@ -144,7 +159,7 @@
       <button class="upg-lightning-btn" id="upg-lightning" onclick="toggleUpgFastMode()" title="Быстрая прокрутка">⚡</button>
       
       <div class="upg-slot" id="upg-input" onclick="switchTab('cases')">
-        <span style="color: #666; font-size: 14px;">Ваш скин<br>(Нажмите в инвентаре снизу)</span>
+        <span style="color: #666; font-size: 13px;">Ваш скин<br>(Нажмите в инвентаре)</span>
       </div>
       <div class="upg-center">
         <div class="upg-wheel-container">
@@ -152,19 +167,19 @@
           <div class="upg-wheel" id="upg-wheel"></div>
           <div class="upg-inner">
             <div id="upg-chance">0%</div>
-            <button class="btn" id="btn-do-upgrade" onclick="executeUpgrade()" disabled style="padding: 10px 25px; font-size: 14px;">Апгрейд</button>
+            <button class="btn" id="btn-do-upgrade" onclick="executeUpgrade()" disabled style="padding: 8px 20px; font-size: 13px; width: auto;">Апгрейд</button>
             <div id="upg-msg"></div>
           </div>
         </div>
       </div>
       <div class="upg-slot" id="upg-target" onclick="openSkinsModal()">
-        <span style="color: #666; font-size: 14px;">Желаемый скин<br>(Нажмите для выбора)</span>
+        <span style="color: #666; font-size: 13px;">Желаемый скин<br>(Нажмите для выбора)</span>
       </div>
     </div>
   </main>
 
   <section class="inventory-section">
-    <h2>Ваш инвентарь</h2>
+    <h2 style="font-size: 20px;">Ваш инвентарь</h2>
     <div class="inventory-grid" id="inventory">
       <div style="color:#666; width: 100%; text-align: center;">Инвентарь пуст</div>
     </div>
@@ -193,7 +208,7 @@
 
   <!-- Модальное окно выигрыша из кейса -->
   <div class="modal-overlay" id="win-modal">
-    <div class="modal" style="width: 340px;">
+    <div class="modal">
       <h3 style="margin-bottom: 5px;">Вы выиграли!</h3>
       <div id="win-items-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0;"></div>
       <div class="modal-buttons" style="flex-direction: column;">
@@ -268,11 +283,8 @@
       if (isActionActive) return;
       upgFastMode = !upgFastMode;
       const btn = document.getElementById('upg-lightning');
-      if (upgFastMode) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
+      if (upgFastMode) btn.classList.add('active');
+      else btn.classList.remove('active');
     }
 
     function selectCase(caseKey) {
@@ -445,7 +457,7 @@
     function clearUpgInput() {
       upgInputIndex = null;
       const slot = document.getElementById('upg-input');
-      slot.innerHTML = '<span style="color: #666; font-size: 14px;">Ваш скин<br>(Нажмите в инвентаре снизу)</span>';
+      slot.innerHTML = '<span style="color: #666; font-size: 13px;">Ваш скин<br>(Нажмите в инвентаре)</span>';
       slot.classList.remove('active-slot');
       updateInventoryDisplay();
       calculateUpgChance();
@@ -495,12 +507,8 @@
         let ratio = inputPrice / targetPrice;
         let chance = ratio * 85; 
 
-        if (ratio < 0.3) {
-          chance *= 0.85;
-        }
-        if (ratio < 0.1) {
-          chance *= 0.7;
-        }
+        if (ratio < 0.3) chance *= 0.85;
+        if (ratio < 0.1) chance *= 0.7;
 
         if (chance < 1) chance = 1;
         if (chance > 90) chance = 90;
@@ -512,7 +520,6 @@
         else if (chance >= 50) colorMain = '#2ecc71';
         else if (chance >= 35) colorMain = '#f1c40f';
         else if (chance >= 20) colorMain = '#e67e22';
-        else if (chance >= 10) colorMain = '#e74c3c';
         
         chanceText.style.color = colorMain;
         
