@@ -170,6 +170,7 @@
     </div>
   </section>
 
+  <!-- Модальное окно пополнения -->
   <div class="modal-overlay" id="deposit-modal">
     <div class="modal">
       <h3>Пополнение баланса</h3>
@@ -181,11 +182,24 @@
     </div>
   </div>
 
+  <!-- Модальное окно выбора желаемого скина для апгрейдера -->
   <div class="modal-overlay" id="skins-modal">
     <div class="modal">
       <h3>Выберите желаемый скин</h3>
       <div class="skins-grid" id="skins-grid-modal"></div>
       <button class="modal-btn" style="margin-top: 15px;" onclick="document.getElementById('skins-modal').style.display='none'">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно выигрыша из кейса -->
+  <div class="modal-overlay" id="win-modal">
+    <div class="modal" style="width: 340px;">
+      <h3 style="margin-bottom: 5px;">Вы выиграли!</h3>
+      <div id="win-items-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0;"></div>
+      <div class="modal-buttons" style="flex-direction: column;">
+        <button class="modal-btn confirm" onclick="sellWonItemsModal()">Продать все (<span id="win-total-price">0</span> ₽)</button>
+        <button class="modal-btn" onclick="takeWonItemsModal()" style="background: #2a3447;">Забрать в инвентарь</button>
+      </div>
     </div>
   </div>
 
@@ -198,6 +212,7 @@
     let spinSpeed = 6;
     let currentTab = 'cases';
     let upgFastMode = false;
+    let lastWonItems = [];
 
     const skinsData = {
       p250: { name: "P250 | Sand Dune", rarity: "blue", price: 10, img: "img/p250.png" },
@@ -303,11 +318,12 @@
       const items = currentCase.items;
       const winnerIndex = 28; const cardWidth = 120; 
       const targetShift = (winnerIndex * cardWidth) - (document.querySelector('.roulette-wrapper').offsetWidth / 2) + (cardWidth / 2);
-      const winners = [];
+      
+      lastWonItems = [];
 
       for (let i = 0; i < openingCount; i++) {
         const winnerItem = items[Math.floor(Math.random() * items.length)];
-        winners.push(winnerItem);
+        lastWonItems.push(winnerItem);
         const track = document.getElementById(`track-${i}`);
         const cards = track.getElementsByClassName('item-card');
         
@@ -325,9 +341,49 @@
       setTimeout(() => {
         isActionActive = false;
         document.getElementById('open-btn').disabled = balance < (currentCase.price * openingCount);
-        winners.forEach(w => inventory.push(w));
-        updateInventoryDisplay();
+        showWinModal(lastWonItems);
       }, (spinSpeed * 1000) + 100);
+    }
+
+    function showWinModal(items) {
+      const container = document.getElementById('win-items-container');
+      container.innerHTML = '';
+      let totalSum = 0;
+
+      items.forEach(item => {
+        totalSum += item.price;
+        container.innerHTML += `
+          <div class="item-card ${item.rarity}" style="width: 90px; height: 110px; font-size: 10px;">
+            <div class="item-visual" style="width: 75px; height: 50px;"><img src="${item.img}" alt=""></div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} ₽</div>
+          </div>
+        `;
+      });
+
+      document.getElementById('win-total-price').innerText = totalSum;
+      document.getElementById('win-modal').style.display = 'flex';
+    }
+
+    function sellWonItemsModal() {
+      let totalSum = 0;
+      lastWonItems.forEach(item => totalSum += item.price);
+      
+      balance += totalSum;
+      document.getElementById('balance').innerText = balance;
+      
+      lastWonItems = [];
+      document.getElementById('win-modal').style.display = 'none';
+      if (selectedCaseKey) {
+        document.getElementById('open-btn').disabled = balance < (cases[selectedCaseKey].price * openingCount);
+      }
+    }
+
+    function takeWonItemsModal() {
+      lastWonItems.forEach(item => inventory.push(item));
+      lastWonItems = [];
+      document.getElementById('win-modal').style.display = 'none';
+      updateInventoryDisplay();
     }
 
     function updateInventoryDisplay() {
@@ -414,7 +470,6 @@
       calculateUpgChance();
     }
 
-    // Усовершенствованная и более строгая формула шансов
     function calculateUpgChance() {
       const chanceText = document.getElementById('upg-chance');
       const msg = document.getElementById('upg-msg');
@@ -437,11 +492,9 @@
           return;
         }
 
-        // Честная математическая пропорция с уменьшенным базовым коэффициентом (чуть меньше шанс на успех)
         let ratio = inputPrice / targetPrice;
         let chance = ratio * 85; 
 
-        // Искусственное усложнение для больших апгрейдов (чем сильнее разница в цене, тем жестче режется шанс)
         if (ratio < 0.3) {
           chance *= 0.85;
         }
@@ -454,7 +507,6 @@
 
         chanceText.innerText = chance.toFixed(1) + '%';
         
-        // Расширенная градиентная палитра оттенков под разные диапазоны шансов
         let colorMain = '#e74c3c';
         if (chance >= 70) colorMain = '#00ff88';
         else if (chance >= 50) colorMain = '#2ecc71';
