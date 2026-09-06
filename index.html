@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYDIK — Симулятор кейсов CS2</title>
+ <script src="https://google.com" async defer></script>
   <style>
     :root {
-      --bg-color: #080b10; --card-bg: rgba(21, 26, 35, 0.75); --accent: #ff8c00; --text: #ffffff; --text-muted: #8a94a6; --success: #00ff88; --fail: #e74c3c; 
-    }
+
+ --bg-color: #080b10; --card-bg: rgba(21, 26, 35, 0.75); --accent: #ff8c00; --text: #ffffff; --text-muted: #8a94a6; --success: #00ff88; --fail: #e74c3c; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
     
     body { 
@@ -132,6 +133,7 @@
     .upg-slot .item-card { margin: 0; width: 100%; height: 100%; border: none; background: transparent; cursor: default; }
     
     .upg-center { position: relative; display: flex; flex-direction: column; align-items: center; flex-grow: 1; z-index: 2; }
+    
     .upg-wheel-container { width: 260px; height: 260px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
     
     .upg-scale-ring {
@@ -207,6 +209,7 @@
       .section-zone { padding: 15px 10px; margin: 10px; }
     }
   </style>
+  <!-- Подключение официального скрипта Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body onclick="initAudioContextOnce()" ontouchstart="initAudioContextOnce()">
@@ -224,6 +227,7 @@
     </div>
     <div class="header-right">
       <div id="auth-container">
+        <!-- Контейнер для Google Sign-In с вашим Client ID -->
         <div id="g_id_onload"
              data-client_id="295573538800-8m3mbqghik0ge1lje6d01vktg9iqck05.apps.googleusercontent.com"
              data-callback="handleCredentialResponse"
@@ -559,28 +563,28 @@
     let upgFastMode = false;
     let lastWonItems = [];
 
-    // Используем относительные пути ./img/... чтобы GitHub Pages находил картинки
+    // ИСПРАВЛЕННЫЕ ПУТИ К КАРТИНКАМ КЕЙСОВ И СКИНОВ (согласно скриншоту папки img)
     const skinsData = {
-      p250: { name: "P250 | Sand Dune", rarity: "blue", price: 10, img: "./img/p250.png" },
-      glock: { name: "Glock-18 | Water", rarity: "purple", price: 35, img: "./img/glock.png" },
-      m4a4: { name: "M4A4 | Evil Daimyo", rarity: "purple", price: 65, img: "./img/m4a4.png" },
-      ak47: { name: "AK-47 | Redline", rarity: "pink", price: 180, img: "./img/ak47.png" },
-      awp: { name: "AWP | Hyper Beast", rarity: "pink", price: 250, img: "./img/awp.png" },
-      karambit: { name: "★ Karambit | Fade", rarity: "gold", price: 500, img: "./img/karambit.png" },
-      ak47_elite: { name: "AK-47 | Elite Build", rarity: "blue", price: 45, img: "./img/ak47.png" },
-      m4a4_griffin: { name: "M4A4 | Griffin", rarity: "purple", price: 85, img: "./img/lik.png" },
-      awp_atheris: { name: "AWP | Atheris", rarity: "pink", price: 220, img: "./img/pp.png" },
-      usps_cyrex: { name: "USP-S | Cyrex", rarity: "purple", price: 95, img: "./img/uhgh.png" },
-      glock_moonrise: { name: "Glock-18 | Moonrise", rarity: "blue", price: 40, img: "./img/jgg.png" },
-      deagle_bronze: { name: "Desert Eagle | Bronze Deco", rarity: "blue", price: 25, img: "./img/www.png" },
-      navaja_safari: { name: "★ Navaja Knife | Safari Mesh", rarity: "gold", price: 1000, img: "./img/navax.png" }
+      p250: { name: "P250 | Sand Dune", rarity: "blue", price: 10, img: "img/p250.png" },
+      glock: { name: "Glock-18 | Water", rarity: "purple", price: 35, img: "img/glock.png" },
+      m4a4: { name: "M4A4 | Evil Daimyo", rarity: "purple", price: 65, img: "img/m4a4.png" },
+      ak47: { name: "AK-47 | Redline", rarity: "pink", price: 180, img: "img/ak47.png" },
+      awp: { name: "AWP | Hyper Beast", rarity: "pink", price: 250, img: "img/awp.png" },
+      karambit: { name: "★ Karambit | Fade", rarity: "gold", price: 500, img: "img/karambit.png" },
+      ak47_elite: { name: "AK-47 | Elite Build", rarity: "blue", price: 45, img: "img/ak47.png" },
+      m4a4_griffin: { name: "M4A4 | Griffin", rarity: "purple", price: 85, img: "img/lik.png" },
+      awp_atheris: { name: "AWP | Atheris", rarity: "pink", price: 220, img: "img/pp.png" },
+      usps_cyrex: { name: "USP-S | Cyrex", rarity: "purple", price: 95, img: "img/uhgh.png" },
+      glock_moonrise: { name: "Glock-18 | Moonrise", rarity: "blue", price: 40, img: "img/jgg.png" },
+      deagle_bronze: { name: "Desert Eagle | Bronze Deco", rarity: "blue", price: 25, img: "img/www.png" },
+      navaja_safari: { name: "★ Navaja Knife | Safari Mesh", rarity: "gold", price: 1000, img: "img/navax.png" }
     };
 
     const cases = {
-      bomj: { name: "Бомж Кейс", price: 30, img: "./img/case_bomj.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4] },
-      standart: { name: "Стандартный", price: 50, img: "./img/case_standart.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47] },
-      major: { name: "Мажор Кейс", price: 100, img: "./img/case_major.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] },
-      elite: { name: "Лудоман кейс", price: 250, img: "./img/case.png", items: [skinsData.ak47_elite, skinsData.m4a4_griffin, skinsData.awp_atheris, skinsData.usps_cyrex, skinsData.glock_moonrise, skinsData.deagle_bronze, skinsData.karambit, skinsData.navaja_safari] }
+      bomj: { name: "Бомж Кейс", price: 30, img: "img/case_bomj.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4] },
+      standart: { name: "Стандартный", price: 50, img: "img/case_standart.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47] },
+      major: { name: "Мажор Кейс", price: 100, img: "img/case_major.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] },
+      elite: { name: "Лудоман кейс", price: 250, img: "img/case.png", items: [skinsData.ak47_elite, skinsData.m4a4_griffin, skinsData.awp_atheris, skinsData.usps_cyrex, skinsData.glock_moonrise, skinsData.deagle_bronze, skinsData.karambit, skinsData.navaja_safari] }
     };
 
     function renderCasesGrid() {
@@ -1013,7 +1017,6 @@
           msg.innerText = '';
           clearUpgInput();
           clearUpgTarget();
-          isAction_Active = false;
           isActionActive = false;
           document.getElementById('upg-lightning').disabled = false;
         }, 1800);
