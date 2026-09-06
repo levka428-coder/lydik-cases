@@ -4,11 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYDIK — Симулятор кейсов CS2</title>
+ <script src="https://google.com" async defer></script>
   <style>
-    :root { --bg-color: #080b10; --card-bg: rgba(21, 26, 35, 0.75); --accent: #ff8c00; --text: #ffffff; --text-muted: #8a94a6; --success: #00ff88; --fail: #e74c3c; }
+    :root {
+
+ --bg-color: #080b10; --card-bg: rgba(21, 26, 35, 0.75); --accent: #ff8c00; --text: #ffffff; --text-muted: #8a94a6; --success: #00ff88; --fail: #e74c3c; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
     
+    body { 
+      background-color: var(--bg-color); 
+      color: var(--text); 
+      padding-bottom: 50px; 
+      min-height: 100vh; 
+      overflow-x: hidden; 
+      position: relative;
+    }
+    
+    .wave-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: -1;
+      overflow: hidden;
+      background: linear-gradient(135deg, #05070a 0%, #0d1424 100%);
+    }
+
+    .wave {
+      position: absolute;
+      bottom: -30px;
+      left: -100px;
+      right: -100px;
+      height: 350px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,30 C150,130 350,-20 500,60 C650,140 900,10 1200,70 L1200,140 L0,140 Z" fill="%23ff8c00" fill-opacity="0.12"/></svg>');
+      background-size: 1200px 140px;
+      animation: wave-animation 12s linear infinite;
+    }
+
+    .wave:nth-child(2) {
+      bottom: -60px;
+      animation: wave-animation 7s linear infinite reverse;
+      opacity: 0.8;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,50 C200,150 400,-10 600,80 C800,170 1000,20 1200,90 L1200,140 L0,140 Z" fill="%23ff0055" fill-opacity="0.12"/></svg>');
+    }
+
+    .wave:nth-child(3) {
+      bottom: -90px;
+      animation: wave-animation 18s linear infinite;
+      opacity: 0.5;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,10 C300,110 500,0 800,90 C1000,150 1100,40 1200,60 L1200,140 L0,140 Z" fill="%2300ff88" fill-opacity="0.08"/></svg>');
+    }
+
+    @keyframes wave-animation {
+      0% { background-position-x: 0; }
+      100% { background-position-x: 1200px; }
+    }
+
     header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(21, 26, 35, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 100; position: relative; gap: 15px; flex-wrap: wrap; }
     .logo { font-size: 24px; font-weight: 900; background: linear-gradient(45deg, #ff8c00, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
     
@@ -17,14 +66,20 @@
     .nav-btn:hover { color: var(--text); }
     .nav-btn.active { color: var(--accent); border: 1px solid rgba(255, 140, 0, 0.4); background: rgba(255, 140, 0, 0.1); }
     
+    .header-right { display: flex; align-items: center; gap: 10px; }
     .balance-box { font-size: 15px; background: rgba(11, 14, 20, 0.8); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255, 140, 0, 0.4); cursor: pointer; white-space: nowrap; }
     #balance { color: var(--success); font-weight: bold; }
 
-    .btn { background: linear-gradient(135deg, var(--accent), #ff5500); color: #000; border: none; padding: 14px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; width: 100%; max-width: 300px; }
-    .btn:hover:not(:disabled) { transform: scale(1.03); box-shadow: 0 0 15px rgba(255,140,0,0.4); }
-    .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+    /* Стили для профиля */
+    .user-profile { display: flex; align-items: center; gap: 8px; background: rgba(11, 14, 20, 0.8); padding: 6px 14px 6px 6px; border-radius: 20px; border: 1px solid var(--success); font-size: 14px; font-weight: 600; }
+    .user-profile img { width: 24px; height: 24px; border-radius: 50%; }
 
-    .item-card { width: 110px; height: 130px; margin: 0 5px; background: rgba(26, 33, 45, 0.8); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 8px; flex-shrink: 0; font-size: 11px; text-align: center; border-bottom: 4px solid #888; cursor: pointer; position: relative; }
+    .btn { background: linear-gradient(135deg, var(--accent), #ff5500); color: #000; border: none; padding: 14px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; width: 100%; max-width: 300px; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3); }
+    .btn:hover:not(:disabled) { transform: scale(1.03); box-shadow: 0 0 20px rgba(255,140,0,0.6); }
+    .btn:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
+
+    .item-card { width: 110px; height: 130px; margin: 0 5px; background: rgba(26, 33, 45, 0.8); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 8px; flex-shrink: 0; font-size: 11px; text-align: center; border-bottom: 4px solid #888; cursor: pointer; position: relative; transition: 0.2s; }
+    .item-card:hover { transform: translateY(-3px); }
     .item-visual { width: 95px; height: 65px; display: flex; align-items: center; justify-content: center; margin-top: 5px; background: rgba(0,0,0,0.3); border-radius: 6px; }
     .item-visual img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6)); }
     .item-card .item-name { font-weight: 600; line-height: 1.2; }
@@ -34,82 +89,162 @@
     
     .btn-sell { background: #e74c3c; color: #fff; border: none; padding: 4px 0; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 4px; }
 
-    .section-zone { max-width: 900px; margin: 20px auto; text-align: center; background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .section-zone { max-width: 900px; margin: 20px auto; text-align: center; background: var(--card-bg); backdrop-filter: blur(10px); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .multi-roulette-container { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
-    .roulette-wrapper { position: relative; width: 100%; height: 140px; overflow: hidden; background: rgba(11, 14, 20, 0.9); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); }
+    .roulette-wrapper { position: relative; width: 100%; height: 140px; overflow: hidden; background: rgba(11, 14, 20, 0.9); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
     .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
     .roulette-track { display: flex; position: absolute; left: 0; top: 5px; }
     
     .controls-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
     .selector-row { display: flex; align-items: center; gap: 8px; justify-content: center; }
-    .count-btn, .speed-btn { background: rgba(26, 33, 45, 0.8); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
-    .count-btn.active, .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .count-btn, .speed-btn { background: rgba(26, 33, 45, 0.8); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+    .count-btn:hover, .speed-btn:hover { border-color: var(--accent); }
+    .count-btn.active, .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 10px rgba(255,140,0,0.4); }
 
-    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-    .case-card { background: var(--card-bg); border-radius: 14px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-    .case-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .case-card { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 14px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; }
+    .case-card:hover { border-color: var(--accent); box-shadow: 0 8px 25px rgba(255,140,0,0.2); }
+    .case-main-clickable { cursor: pointer; }
     .case-visual { width: 140px; height: 110px; display: flex; align-items: center; justify-content: center; margin: 12px auto; background: rgba(0,0,0,0.3); border-radius: 10px; }
     .case-visual img { max-width: 85%; max-height: 85%; object-fit: contain; }
 
-    .upgrader-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 30px auto; padding: 30px 20px; background: var(--card-bg); border-radius: 16px; position: relative; gap: 15px; }
-    .upg-slot { width: 140px; height: 180px; background: rgba(11, 14, 20, 0.8); border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
-    .upg-slot:hover { border-color: rgba(255, 140, 0, 0.5); }
-    .upg-slot.active-slot { border-color: var(--accent); background: rgba(21, 26, 35, 1); cursor: default; }
+    .case-contents { margin-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; text-align: left; }
+    .case-contents-title { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    .case-items-list { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin; }
+    .case-items-list::-webkit-scrollbar { height: 4px; }
+    .case-items-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    
+    .mini-skin-card { min-width: 70px; width: 70px; background: rgba(11, 14, 20, 0.6); border-radius: 6px; padding: 4px; text-align: center; border-bottom: 3px solid #888; font-size: 9px; flex-shrink: 0; }
+    .mini-skin-card.blue { border-bottom-color: #4b69ff; }
+    .mini-skin-card.purple { border-bottom-color: #d32ce6; }
+    .mini-skin-card.pink { border-bottom-color: #eb4b4b; }
+    .mini-skin-card.gold { border-bottom-color: #ffd700; }
+    .mini-skin-img { width: 100%; height: 35px; display: flex; align-items: center; justify-content: center; }
+    .mini-skin-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .mini-skin-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; color: var(--text); }
+    .mini-skin-price { color: var(--success); font-weight: bold; font-size: 9px; }
+
+    .upgrader-wrapper { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 30px auto; padding: 30px 20px; background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; position: relative; gap: 15px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; }
+    .upgrader-wrapper::before { content: ''; position: absolute; width: 220px; height: 220px; background: radial-gradient(circle, rgba(255,140,0,0.25) 0%, transparent 70%); top: -60px; left: -60px; z-index: 0; pointer-events: none; }
+    .upgrader-wrapper::after { content: ''; position: absolute; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0,255,136,0.2) 0%, transparent 70%); bottom: -60px; right: -60px; z-index: 0; pointer-events: none; }
+
+    .upg-slot { width: 140px; height: 180px; background: rgba(11, 14, 20, 0.85); border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px; cursor: pointer; transition: 0.3s; flex-shrink: 0; z-index: 2; position: relative; }
+    .upg-slot:hover { border-color: rgba(255, 140, 0, 0.6); box-shadow: 0 0 15px rgba(255,140,0,0.15); }
+    .upg-slot.active-slot { border-color: var(--accent); background: rgba(21, 26, 35, 1); cursor: default; box-shadow: 0 0 20px rgba(255,140,0,0.25); }
     .upg-slot .item-card { margin: 0; width: 100%; height: 100%; border: none; background: transparent; cursor: default; }
     
-    .upg-center { position: relative; display: flex; flex-direction: column; align-items: center; flex-grow: 1; }
-    .upg-wheel-container { width: 240px; height: 240px; border-radius: 50%; border: 6px solid #141a24; position: relative; background: #1a2230; box-shadow: 0 0 25px rgba(0,0,0,0.5); }
+    .upg-center { position: relative; display: flex; flex-direction: column; align-items: center; flex-grow: 1; z-index: 2; }
+    
+    .upg-wheel-container { width: 260px; height: 260px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+    
+    .upg-scale-ring {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 50%;
+      border: 2px solid rgba(138, 148, 166, 0.25);
+      pointer-events: none;
+      z-index: 7;
+    }
+    .upg-scale-ring::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px dashed rgba(138, 148, 166, 0.2);
+    }
+    .scale-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(138, 148, 166, 0.85);
+      letter-spacing: 0.5px;
+    }
+    .scale-0 { bottom: -2px; left: 50%; transform: translateX(-50%); }
+    .scale-50-left { top: 50%; left: -8px; transform: translateY(-50%); }
+    .scale-50-right { top: 50%; right: -8px; transform: translateY(-50%); }
+    .scale-100 { top: -2px; left: 50%; transform: translateX(-50%); }
+
+    .upg-wheel-inner-wrap {
+      width: 210px; height: 210px; border-radius: 50%; border: 5px solid #141a24; position: relative; background: #1a2230; box-shadow: 0 0 30px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,0,0,0.8);
+      overflow: hidden;
+    }
     .upg-wheel { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#1b2432 0deg, #1b2432 360deg); overflow: hidden; transition: background 0.3s ease; }
     .upg-rotating-pointer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; pointer-events: none; z-index: 5; transform-origin: center center; }
-    .upg-arrow-tip { position: absolute; top: -20px; left: calc(50% - 9px); width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 25px solid #ffaa33; filter: drop-shadow(0 0 5px rgba(255, 170, 51, 0.8)); }
-    .upg-inner { position: absolute; top: 13%; left: 13%; width: 74%; height: 74%; background: #0c1017; border-radius: 50%; border: 4px solid #1b2432; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 6; }
+    .upg-arrow-tip { position: absolute; top: 2px; left: calc(50% - 7px); width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 20px solid #ffaa33; filter: drop-shadow(0 0 8px rgba(255, 170, 51, 0.9)); }
+    .upg-inner { position: absolute; top: 15%; left: 15%; width: 70%; height: 70%; background: #0c1017; border-radius: 50%; border: 4px solid #1b2432; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 6; }
     
-    #upg-chance { font-size: 26px; font-weight: bold; color: #fff; margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
-    #upg-msg { font-size: 12px; font-weight: bold; position: absolute; bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+    #upg-chance { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 6px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    #upg-msg { font-size: 11px; font-weight: bold; position: absolute; bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
 
     .upg-lightning-btn { position: absolute; top: 10px; right: 10px; background: rgba(26, 33, 45, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 18px; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; z-index: 10; }
     .upg-lightning-btn:hover { border-color: var(--accent); color: var(--text); }
     .upg-lightning-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
     .inventory-section { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-    .inventory-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; min-height: 120px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; }
+    .inventory-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; min-height: 120px; padding: 15px; background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
 
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-    .modal { background: rgba(21, 26, 35, 0.95); border: 1px solid rgba(255, 140, 0, 0.3); padding: 20px; border-radius: 16px; text-align: center; width: 100%; max-width: 340px; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+    .modal { background: rgba(21, 26, 35, 0.98); border: 1px solid rgba(255, 140, 0, 0.3); padding: 25px; border-radius: 16px; text-align: center; width: 100%; max-width: 340px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
     .modal input { width: 100%; padding: 10px; background: #0b0e14; border: 1px solid #2a3447; border-radius: 8px; color: var(--success); font-size: 18px; font-weight: bold; text-align: center; outline: none; margin: 15px 0; }
     .modal-buttons { display: flex; gap: 10px; justify-content: center; }
     .modal-btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: #333; color: #fff; transition: 0.2s; width: 100%; }
     .modal-btn:hover { background: #444; }
     .modal-btn.confirm { background: var(--accent); color: #000; }
-    .modal-btn.confirm:hover { background: #ff9f1a; }
+    .modal-btn.confirm:hover { background: #ff9f1a; box-shadow: 0 0 10px rgba(255,140,0,0.4); }
     
     #skins-modal .modal { max-width: 500px; }
-    .skins-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 350px; overflow-y: auto; margin-top: 15px; }
+    .skins-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 350px; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
+    .skins-grid .item-card.disabled-skin { opacity: 0.35; filter: grayscale(80%); cursor: not-allowed; }
 
-    /* Мобильная адаптация */
     @media (max-width: 768px) {
       header { padding: 12px 15px; justify-content: center; }
       .logo { display: none; }
       .nav-tabs { order: 1; width: 100%; justify-content: center; }
-      .balance-box { order: 2; font-size: 14px; padding: 6px 14px; }
+      .header-right { order: 2; }
       
       .upgrader-wrapper { flex-direction: column; padding: 20px 10px; }
       .upg-slot { width: 100%; height: 100px; flex-direction: row; justify-content: space-around; }
       .upg-slot .item-card { width: 80px; height: 90px; }
-      .upg-wheel-container { width: 200px; height: 200px; }
+      .upg-wheel-container { width: 230px; height: 230px; }
       
       .section-zone { padding: 15px 10px; margin: 10px; }
     }
   </style>
+  <!-- Подключение официального скрипта Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body>
+<body onclick="initAudioContextOnce()" ontouchstart="initAudioContextOnce()">
+  <div class="wave-bg">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+
   <header>
     <div class="logo">LYDIK</div>
     <div class="nav-tabs">
       <button class="nav-btn active" id="tab-cases" onclick="switchTab('cases')">Кейсы</button>
       <button class="nav-btn" id="tab-upgrader" onclick="switchTab('upgrader')">Апгрейдер</button>
     </div>
-    <div class="balance-box" onclick="document.getElementById('deposit-modal').style.display='flex'">Баланс: <span id="balance">100</span> ₽</div>
+    <div class="header-right">
+      <div id="auth-container">
+        <!-- Контейнер для Google Sign-In с вашим Client ID -->
+        <div id="g_id_onload"
+             data-client_id="295573538800-8m3mbqghik0ge1lje6d01vktg9iqck05.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="pill"
+             data-theme="outline"
+             data-text="sign_in_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+      </div>
+      <div class="balance-box" onclick="document.getElementById('deposit-modal').style.display='flex'">Баланс: <span id="balance">100</span> ₽</div>
+    </div>
   </header>
 
   <main id="view-cases">
@@ -134,23 +269,7 @@
     </section>
 
     <section>
-      <div class="cases-grid">
-        <div class="case-card" onclick="selectCase('bomj')">
-          <div class="case-title">Бомж Кейс</div>
-          <div class="case-visual"><img src="img/case_bomj.png" alt="Бомж кейс"></div>
-          <div style="color:var(--success); font-weight:bold;">30 ₽</div>
-        </div>
-        <div class="case-card" onclick="selectCase('standart')">
-          <div class="case-title">Стандартный</div>
-          <div class="case-visual"><img src="img/case_standart.png" alt="Стандартный кейс"></div>
-          <div style="color:var(--success); font-weight:bold;">50 ₽</div>
-        </div>
-        <div class="case-card" onclick="selectCase('major')">
-          <div class="case-title">Мажор Кейс</div>
-          <div class="case-visual"><img src="img/case_major.png" alt="Мажор кейс"></div>
-          <div style="color:var(--success); font-weight:bold;">100 ₽</div>
-        </div>
-      </div>
+      <div class="cases-grid" id="cases-grid-container"></div>
     </section>
   </main>
 
@@ -161,17 +280,27 @@
       <div class="upg-slot" id="upg-input" onclick="switchTab('cases')">
         <span style="color: #666; font-size: 13px;">Ваш скин<br>(Нажмите в инвентаре)</span>
       </div>
+      
       <div class="upg-center">
         <div class="upg-wheel-container">
-          <div class="upg-rotating-pointer" id="upg-rotating-pointer"><div class="upg-arrow-tip"></div></div>
-          <div class="upg-wheel" id="upg-wheel"></div>
-          <div class="upg-inner">
-            <div id="upg-chance">0%</div>
-            <button class="btn" id="btn-do-upgrade" onclick="executeUpgrade()" disabled style="padding: 8px 20px; font-size: 13px; width: auto;">Апгрейд</button>
-            <div id="upg-msg"></div>
+          <div class="upg-scale-ring">
+            <span class="scale-label scale-100">100%</span>
+            <span class="scale-label scale-50-left">50%</span>
+            <span class="scale-label scale-50-right">50%</span>
+            <span class="scale-label scale-0">0%</span>
+          </div>
+          <div class="upg-wheel-inner-wrap">
+            <div class="upg-rotating-pointer" id="upg-rotating-pointer"><div class="upg-arrow-tip"></div></div>
+            <div class="upg-wheel" id="upg-wheel"></div>
+            <div class="upg-inner">
+              <div id="upg-chance">0%</div>
+              <button class="btn" id="btn-do-upgrade" onclick="executeUpgrade()" disabled style="padding: 6px 16px; font-size: 12px; width: auto;">Апгрейд</button>
+              <div id="upg-msg"></div>
+            </div>
           </div>
         </div>
       </div>
+      
       <div class="upg-slot" id="upg-target" onclick="openSkinsModal()">
         <span style="color: #666; font-size: 13px;">Желаемый скин<br>(Нажмите для выбора)</span>
       </div>
@@ -185,7 +314,6 @@
     </div>
   </section>
 
-  <!-- Модальное окно пополнения -->
   <div class="modal-overlay" id="deposit-modal">
     <div class="modal">
       <h3>Пополнение баланса</h3>
@@ -197,7 +325,6 @@
     </div>
   </div>
 
-  <!-- Модальное окно выбора желаемого скина для апгрейдера -->
   <div class="modal-overlay" id="skins-modal">
     <div class="modal">
       <h3>Выберите желаемый скин</h3>
@@ -206,7 +333,6 @@
     </div>
   </div>
 
-  <!-- Модальное окно выигрыша из кейса -->
   <div class="modal-overlay" id="win-modal">
     <div class="modal">
       <h3 style="margin-bottom: 5px;">Вы выиграли!</h3>
@@ -219,10 +345,221 @@
   </div>
 
   <script>
-    let balance = 100;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function initAudioContextOnce() {
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playCaseTick(progress) {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'triangle';
+        let freq1 = 220 - (progress * 80);
+        osc1.frequency.setValueAtTime(freq1, now);
+        osc1.frequency.exponentialRampToValueAtTime(50, now + 0.04);
+        
+        gain1.gain.setValueAtTime(0.08, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.04);
+
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1450 - (progress * 400), now);
+        
+        gain2.gain.setValueAtTime(0.03, now);
+        gain2.gain.exponentialRampToValueAtTime(0.0005, now + 0.025);
+        
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now);
+        osc2.stop(now + 0.025);
+      } catch(e) {}
+    }
+
+    function playUpgTick(progress) {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800 - (progress * 300), now);
+        
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.025);
+      } catch(e) {}
+    }
+
+    function playStopClickSound() {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.1);
+        
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, now);
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } catch(e) {}
+    }
+
+    function playWinSound() {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        
+        notes.forEach((note, index) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(note, now + (index * 0.08));
+          
+          gain.gain.setValueAtTime(0.12, now + (index * 0.08));
+          gain.gain.exponentialRampToValueAtTime(0.001, now + (index * 0.08) + 0.6);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + (index * 0.08));
+          osc.stop(now + (index * 0.08) + 0.6);
+        });
+      } catch(e) {}
+    }
+
+    function playLoseSound() {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.linearRampToValueAtTime(60, now + 0.4);
+        
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } catch(e) {}
+    }
+
+    let balance = localStorage.getItem('lydik_balance') !== null ? parseInt(localStorage.getItem('lydik_balance')) : 100;
+    let inventory = localStorage.getItem('lydik_inventory') !== null ? JSON.parse(localStorage.getItem('lydik_inventory')) : [];
+    let user = localStorage.getItem('lydik_user') !== null ? JSON.parse(localStorage.getItem('lydik_user')) : null;
+
+    function saveState() {
+      localStorage.setItem('lydik_balance', balance);
+      localStorage.setItem('lydik_inventory', JSON.stringify(inventory));
+      if (user) {
+        localStorage.setItem('lydik_user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('lydik_user');
+      }
+    }
+
+    // Декодирование JWT токена от Google
+    function parseJwt(token) {
+      try {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Обработчик входа через Google
+    function handleCredentialResponse(response) {
+      const responsePayload = parseJwt(response.credential);
+      if (responsePayload) {
+        user = {
+          name: responsePayload.name || responsePayload.given_name,
+          avatar: responsePayload.picture
+        };
+        saveState();
+        updateAuthUI();
+      }
+    }
+
+    function logoutGoogle() {
+      user = null;
+      localStorage.removeItem('lydik_user');
+      updateAuthUI();
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.disableAutoSelect();
+      }
+    }
+
+    function updateAuthUI() {
+      const authContainer = document.getElementById('auth-container');
+      if (user) {
+        authContainer.innerHTML = `
+          <div class="user-profile" title="Нажмите, чтобы выйти" onclick="logoutGoogle()" style="cursor: pointer;">
+            <img src="${user.avatar}" alt="avatar">
+            <span>${user.name}</span>
+          </div>
+        `;
+      } else {
+        authContainer.innerHTML = `
+          <div id="g_id_onload"
+               data-client_id="295573538800-8m3mbqghik0ge1lje6d01vktg9iqck05.apps.googleusercontent.com"
+               data-callback="handleCredentialResponse"
+               data-auto_prompt="false">
+          </div>
+          <div class="g_id_signin"
+               data-type="standard"
+               data-shape="pill"
+               data-theme="outline"
+               data-text="sign_in_with"
+               data-size="large"
+               data-logo_alignment="left">
+          </div>
+        `;
+        if (typeof google !== 'undefined' && google.accounts) {
+          google.accounts.id.renderButton(
+            document.querySelector('.g_id_signin'),
+            { theme: "outline", size: "large", shape: "pill", type: "standard" }
+          );
+        }
+      }
+    }
+
     let selectedCaseKey = null;
     let isActionActive = false;
-    let inventory = [];
     let openingCount = 1;
     let spinSpeed = 6;
     let currentTab = 'cases';
@@ -235,14 +572,58 @@
       m4a4: { name: "M4A4 | Evil Daimyo", rarity: "purple", price: 65, img: "img/m4a4.png" },
       ak47: { name: "AK-47 | Redline", rarity: "pink", price: 180, img: "img/ak47.png" },
       awp: { name: "AWP | Hyper Beast", rarity: "pink", price: 250, img: "img/awp.png" },
-      karambit: { name: "★ Karambit | Fade", rarity: "gold", price: 1500, img: "img/karambit.png" }
+      karambit: { name: "★ Karambit | Fade", rarity: "gold", price: 500, img: "img/karambit.png" },
+      ak47_elite: { name: "AK-47 | Elite Build", rarity: "blue", price: 45, img: "img/ak47.png" },
+      m4a4_griffin: { name: "M4A4 | Griffin", rarity: "purple", price: 85, img: "img/lik.png" },
+      awp_atheris: { name: "AWP | Atheris", rarity: "pink", price: 220, img: "img/pp.png" },
+      usps_cyrex: { name: "USP-S | Cyrex", rarity: "purple", price: 95, img: "img/uhgh.png" },
+      glock_moonrise: { name: "Glock-18 | Moonrise", rarity: "blue", price: 40, img: "img/jgg.png" },
+      deagle_bronze: { name: "Desert Eagle | Bronze Deco", rarity: "blue", price: 25, img: "img/www.png" },
+      navaja_safari: { name: "★ Navaja Knife | Safari Mesh", rarity: "gold", price: 1000, img: "img/navax.png" }
     };
 
     const cases = {
-      bomj: { name: "Бомж Кейс", price: 30, items: [skinsData.p250, skinsData.glock, skinsData.m4a4] },
-      standart: { name: "Стандартный", price: 50, items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47] },
-      major: { name: "Мажор Кейс", price: 100, items: [skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] }
+      bomj: { name: "Бомж Кейс", price: 30, img: "img/case_bomj.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4] },
+      standart: { name: "Стандартный", price: 50, img: "img/case_standart.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47] },
+      major: { name: "Мажор Кейс", price: 100, img: "img/case_major.png", items: [skinsData.p250, skinsData.glock, skinsData.m4a4, skinsData.ak47, skinsData.awp, skinsData.karambit] },
+      elite: { name: "Лудоман кейс", price: 250, img: "img/case.png", items: [skinsData.ak47_elite, skinsData.m4a4_griffin, skinsData.awp_atheris, skinsData.usps_cyrex, skinsData.glock_moonrise, skinsData.deagle_bronze, skinsData.karambit, skinsData.navaja_safari] }
     };
+
+    function renderCasesGrid() {
+      const grid = document.getElementById('cases-grid-container');
+      grid.innerHTML = '';
+
+      for (const [key, caseObj] of Object.entries(cases)) {
+        const uniqueItems = Array.from(new Set(caseObj.items));
+        
+        let itemsHtml = '';
+        uniqueItems.forEach(item => {
+          itemsHtml += `
+            <div class="mini-skin-card ${item.rarity}">
+              <div class="mini-skin-img"><img src="${item.img}" alt=""></div>
+              <div class="mini-skin-name" title="${item.name}">${item.name}</div>
+              <div class="mini-skin-price">${item.price} ₽</div>
+            </div>
+          `;
+        });
+
+        grid.innerHTML += `
+          <div class="case-card">
+            <div class="case-main-clickable" onclick="selectCase('${key}')">
+              <div class="case-title" style="font-weight: bold; font-size: 16px;">${caseObj.name}</div>
+              <div class="case-visual"><img src="${caseObj.img}" alt="${caseObj.name}"></div>
+              <div style="color:var(--success); font-weight:bold; font-size: 15px; margin-bottom: 10px;">${caseObj.price} ₽</div>
+            </div>
+            <div class="case-contents">
+              <div class="case-contents-title">Содержимое кейса:</div>
+              <div class="case-items-list">
+                ${itemsHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
 
     function switchTab(tab) {
       if (isActionActive) return;
@@ -251,6 +632,14 @@
       document.getElementById('view-upgrader').style.display = tab === 'upgrader' ? 'block' : 'none';
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tab).classList.add('active');
+      
+      if (tab === 'upgrader' && upgInputIndex !== null && upgTargetItem !== null) {
+        const inputPrice = inventory[upgInputIndex].price;
+        if (upgTargetItem.price <= inputPrice) {
+          clearUpgTarget();
+        }
+      }
+      
       updateInventoryDisplay();
     }
 
@@ -258,7 +647,8 @@
       const amt = parseInt(document.getElementById('deposit-amount').value);
       if (amt > 0) {
         balance += amt; 
-        document.getElementById('balance').innerText = balance; 
+        document.getElementById('balance').innerText = balance;
+        saveState();
         if (selectedCaseKey && currentTab === 'cases') selectCase(selectedCaseKey); 
         document.getElementById('deposit-modal').style.display='none';
       }
@@ -300,19 +690,25 @@
       const container = document.getElementById('roulettes-container');
       container.innerHTML = '';
       for (let i = 0; i < openingCount; i++) {
-        container.innerHTML += `<div class="roulette-wrapper"><div class="pointer"></div><div class="roulette-track" id="track-${i}"></div></div>`;
-        generateTrack(currentCase.items, `track-${i}`);
+        container.innerHTML += `
+          <div class="roulette-wrapper"><div class="pointer"></div><div class="roulette-track" id="track-${i}"></div></div>
+        `;
+        fillTrackRandomly(`track-${i}`, currentCase.items, 40);
       }
     }
 
-    function generateTrack(items, trackId) {
+    function fillTrackRandomly(trackId, items, count) {
       const track = document.getElementById(trackId);
-      track.style.transition = 'none'; 
-      track.style.transform = 'translateX(0px)'; 
       track.innerHTML = '';
-      for (let i = 0; i < 35; i++) {
-        const item = items[Math.floor(Math.random() * items.length)];
-        track.innerHTML += `<div class="item-card ${item.rarity}"><div class="item-visual"><img src="${item.img}" alt=""></div><div class="item-name">${item.name}</div></div>`;
+      for (let j = 0; j < count; j++) {
+        const randItem = items[Math.floor(Math.random() * items.length)];
+        track.innerHTML += `
+          <div class="item-card ${randItem.rarity}">
+            <div class="item-visual"><img src="${randItem.img}" alt=""></div>
+            <div class="item-name">${randItem.name}</div>
+            <div class="item-price">${randItem.price} ₽</div>
+          </div>
+        `;
       }
     }
 
@@ -324,279 +720,315 @@
 
       balance -= totalPrice;
       document.getElementById('balance').innerText = balance;
+      saveState();
+      
       isActionActive = true;
       document.getElementById('open-btn').disabled = true;
 
-      const items = currentCase.items;
-      const winnerIndex = 28; 
-      const cardWidth = 120; 
-      const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
-      const baseShift = (winnerIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2);
-      
-      const overscroll = 40; 
-      const targetShift = baseShift + overscroll;
-
       lastWonItems = [];
+      let finishedRoulettes = 0;
 
       for (let i = 0; i < openingCount; i++) {
-        const winnerItem = items[Math.floor(Math.random() * items.length)];
-        lastWonItems.push(winnerItem);
-        const track = document.getElementById(`track-${i}`);
-        const cards = track.getElementsByClassName('item-card');
+        const trackId = `track-${i}`;
+        fillTrackRandomly(trackId, currentCase.items, 60);
+        const track = document.getElementById(trackId);
         
-        cards[winnerIndex].className = `item-card ${winnerItem.rarity}`;
-        cards[winnerIndex].innerHTML = `<div class="item-visual"><img src="${winnerItem.img}" alt=""></div><div class="item-name">${winnerItem.name}</div>`;
+        const winningIndex = 45;
+        const cards = track.children;
+        const winningItemData = currentCase.items[Math.floor(Math.random() * currentCase.items.length)];
         
-        track.style.transition = 'none';
-        track.style.transform = 'translateX(0px)';
-        void track.offsetWidth; 
+        const cardVisual = cards[winningIndex].querySelector('.item-visual img');
+        const cardName = cards[winningIndex].querySelector('.item-name');
+        const cardPrice = cards[winningIndex].querySelector('.item-price');
+        cards[winningIndex].className = `item-card ${winningItemData.rarity}`;
+        cardVisual.src = winningItemData.img;
+        cardName.innerText = winningItemData.name;
+        cardPrice.innerText = winningItemData.price + ' ₽';
         
-        track.style.transition = `transform ${spinSpeed}s cubic-bezier(0.08, 0.75, 0.12, 1.05)`; 
-        track.style.transform = `translateX(-${targetShift}px)`;
+        lastWonItems.push(winningItemData);
+
+        const cardWidth = 120;
+        const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
+        const targetOffset = (winningIndex * cardWidth) - (wrapperWidth / 2) + (cardWidth / 2) + (Math.random() * 40 - 20);
+
+        track.style.transition = `transform ${spinSpeed}s cubic-bezier(0.15, 0.85, 0.25, 1)`;
+        track.style.transform = `translateX(-${targetOffset}px)`;
+
+        let tickInterval = setInterval(() => {
+          playCaseTick(Math.random());
+        }, 120 / (7 - spinSpeed));
+
+        setTimeout(() => {
+          clearInterval(tickInterval);
+          playStopClickSound();
+          finishedRoulettes++;
+
+          if (finishedRoulettes === openingCount) {
+            isActionActive = false;
+            document.getElementById('open-btn').disabled = balance < totalPrice;
+            playWinSound();
+            showWinModal(lastWonItems);
+          }
+        }, spinSpeed * 1000);
       }
-
-      setTimeout(() => {
-        for (let i = 0; i < openingCount; i++) {
-          const track = document.getElementById(`track-${i}`);
-          track.style.transition = 'transform 0.35s ease-out';
-          track.style.transform = `translateX(-${baseShift}px)`;
-        }
-      }, spinSpeed * 1000);
-
-      setTimeout(() => {
-        isActionActive = false;
-        document.getElementById('open-btn').disabled = balance < (currentCase.price * openingCount);
-        showWinModal(lastWonItems);
-      }, (spinSpeed * 1000) + 380);
     }
 
     function showWinModal(items) {
       const container = document.getElementById('win-items-container');
       container.innerHTML = '';
-      let totalSum = 0;
+      let totalPrice = 0;
 
       items.forEach(item => {
-        totalSum += item.price;
+        totalPrice += item.price;
         container.innerHTML += `
-          <div class="item-card ${item.rarity}" style="width: 90px; height: 110px; font-size: 10px;">
-            <div class="item-visual" style="width: 75px; height: 50px;"><img src="${item.img}" alt=""></div>
+          <div class="item-card ${item.rarity}" style="width: 100px; height: 120px;">
+            <div class="item-visual" style="width: 85px; height: 55px;"><img src="${item.img}" alt=""></div>
             <div class="item-name">${item.name}</div>
             <div class="item-price">${item.price} ₽</div>
           </div>
         `;
       });
 
-      document.getElementById('win-total-price').innerText = totalSum;
+      document.getElementById('win-total-price').innerText = totalPrice;
       document.getElementById('win-modal').style.display = 'flex';
     }
 
     function sellWonItemsModal() {
-      let totalSum = 0;
-      lastWonItems.forEach(item => totalSum += item.price);
-      
-      balance += totalSum;
+      let sum = 0;
+      lastWonItems.forEach(item => sum += item.price);
+      balance += sum;
       document.getElementById('balance').innerText = balance;
-      
-      lastWonItems = [];
+      saveState();
       document.getElementById('win-modal').style.display = 'none';
-      if (selectedCaseKey) {
-        document.getElementById('open-btn').disabled = balance < (cases[selectedCaseKey].price * openingCount);
-      }
+      if (selectedCaseKey) selectCase(selectedCaseKey);
     }
 
     function takeWonItemsModal() {
       lastWonItems.forEach(item => inventory.push(item));
-      lastWonItems = [];
-      document.getElementById('win-modal').style.display = 'none';
+      saveState();
       updateInventoryDisplay();
+      document.getElementById('win-modal').style.display = 'none';
+      if (selectedCaseKey) selectCase(selectedCaseKey);
     }
 
     function updateInventoryDisplay() {
-      const invGrid = document.getElementById('inventory');
-      if(inventory.length === 0) {
-          invGrid.innerHTML = '<div style="color:#666; width: 100%; text-align: center;">Инвентарь пуст</div>';
-          return;
+      const invContainer = document.getElementById('inventory');
+      if (inventory.length === 0) {
+        invContainer.innerHTML = '<div style="color:#666; width: 100%; text-align: center;">Инвентарь пуст</div>';
+        return;
       }
-      invGrid.innerHTML = '';
-      inventory.forEach((item, index) => {
-        let isSelected = (currentTab === 'upgrader' && upgInputIndex === index);
-        let extraContent = currentTab === 'cases' ? `<button class="btn-sell" onclick="event.stopPropagation(); sellItem(${index})" ${isActionActive ? 'disabled':''}>Продать</button>` : '';
 
-        invGrid.innerHTML += `
-        <div class="item-card ${item.rarity} ${isSelected ? 'selected-for-upg' : ''}" style="height: ${currentTab === 'cases' ? '160px' : '130px'};" onclick="handleInventoryClick(${index})">
+      invContainer.innerHTML = '';
+      inventory.forEach((item, index) => {
+        const isSelectedUpg = (currentTab === 'upgrader' && upgInputIndex === index);
+        invContainer.innerHTML += `
+          <div class="item-card ${item.rarity} ${isSelectedUpg ? 'selected-for-upg' : ''}" onclick="handleInventoryItemClick(${index})">
             <div class="item-visual"><img src="${item.img}" alt=""></div>
             <div class="item-name">${item.name}</div>
-            <div class="item-price">${item.price} ₽</div>
-            ${extraContent}
-        </div>`;
+            <div>
+              <div class="item-price">${item.price} ₽</div>
+              <button class="btn-sell" onclick="event.stopPropagation(); sellInventoryItem(${index})">Продать</button>
+            </div>
+          </div>
+        `;
       });
-      if(upgInputIndex !== null && !inventory[upgInputIndex]) clearUpgInput();
     }
 
-    function handleInventoryClick(index) {
+    function sellInventoryItem(index) {
       if (isActionActive) return;
-      if (currentTab === 'upgrader') {
-        if (upgInputIndex === index) clearUpgInput();
-        else selectUpgInput(index);
+      if (currentTab === 'upgrader' && upgInputIndex === index) {
+        clearUpgInput();
+      } else if (upgInputIndex !== null && upgInputIndex > index) {
+        upgInputIndex--;
       }
-    }
-
-    function sellItem(index) {
-      if (isActionActive) return;
       balance += inventory[index].price;
-      document.getElementById('balance').innerText = balance;
-      if(upgInputIndex === index) clearUpgInput();
       inventory.splice(index, 1);
-      if(upgInputIndex !== null && index < upgInputIndex) upgInputIndex--;
+      document.getElementById('balance').innerText = balance;
+      saveState();
       updateInventoryDisplay();
-      if (selectedCaseKey && currentTab === 'cases') { 
-        document.getElementById('open-btn').disabled = balance < (cases[selectedCaseKey].price * openingCount); 
-      }
+      if (currentTab === 'upgrader') updateUpgraderUI();
     }
 
     let upgInputIndex = null;
     let upgTargetItem = null;
 
-    function selectUpgInput(index) {
+    function handleInventoryItemClick(index) {
+      if (isActionActive) return;
       upgInputIndex = index;
-      const item = inventory[index];
-      const slot = document.getElementById('upg-input');
-      slot.innerHTML = `<div class="item-card ${item.rarity}"><div class="item-visual"><img src="${item.img}" alt=""></div><div class="item-name">${item.name}</div><div class="item-price">${item.price} ₽</div></div>`;
-      slot.classList.add('active-slot');
-      updateInventoryDisplay();
-      calculateUpgChance();
+      switchTab('upgrader');
+      updateUpgraderUI();
     }
 
     function clearUpgInput() {
       upgInputIndex = null;
-      const slot = document.getElementById('upg-input');
-      slot.innerHTML = '<span style="color: #666; font-size: 13px;">Ваш скин<br>(Нажмите в инвентаре)</span>';
-      slot.classList.remove('active-slot');
+      document.getElementById('upg-input').innerHTML = '<span style="color: #666; font-size: 13px;">Ваш скин<br>(Нажмите в инвентаре)</span>';
+      document.getElementById('upg-input').classList.remove('active-slot');
+      updateUpgraderUI();
       updateInventoryDisplay();
-      calculateUpgChance();
+    }
+
+    function clearUpgTarget() {
+      upgTargetItem = null;
+      document.getElementById('upg-target').innerHTML = '<span style="color: #666; font-size: 13px;">Желаемый скин<br>(Нажмите для выбора)</span>';
+      document.getElementById('upg-target').classList.remove('active-slot');
+      updateUpgraderUI();
     }
 
     function openSkinsModal() {
       if (isActionActive) return;
+      if (upgInputIndex === null) {
+        alert("Сначала выберите ваш скин из инвентаря!");
+        switchTab('cases');
+        return;
+      }
+      
+      const inputPrice = inventory[upgInputIndex].price;
       const grid = document.getElementById('skins-grid-modal');
       grid.innerHTML = '';
-      Object.values(skinsData).forEach((item, index) => {
-        grid.innerHTML += `<div class="item-card ${item.rarity}" onclick="setUpgTarget('${Object.keys(skinsData)[index]}')"><div class="item-visual"><img src="${item.img}" alt=""></div><div class="item-name">${item.name}</div><div class="item-price">${item.price} ₽</div></div>`;
+
+      Object.values(skinsData).forEach(item => {
+        const isDisabled = item.price <= inputPrice;
+        grid.innerHTML += `
+          <div class="item-card ${item.rarity} ${isDisabled ? 'disabled-skin' : ''}" ${!isDisabled ? `onclick="selectTargetSkinByName('${item.name}')"` : ''}>
+            <div class="item-visual"><img src="${item.img}" alt=""></div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} ₽</div>
+          </div>
+        `;
       });
+
       document.getElementById('skins-modal').style.display = 'flex';
     }
 
-    function setUpgTarget(skinKey) {
-      upgTargetItem = skinsData[skinKey];
-      const slot = document.getElementById('upg-target');
-      slot.innerHTML = `<div class="item-card ${upgTargetItem.rarity}"><div class="item-visual"><img src="${upgTargetItem.img}" alt=""></div><div class="item-name">${upgTargetItem.name}</div><div class="item-price">${upgTargetItem.price} ₽</div></div>`;
-      slot.classList.add('active-slot');
+    function selectTargetSkinByName(name) {
+      for (const item of Object.values(skinsData)) {
+        if (item.name === name) {
+          upgTargetItem = item;
+          break;
+        }
+      }
       document.getElementById('skins-modal').style.display = 'none';
-      calculateUpgChance();
+      
+      const targetSlot = document.getElementById('upg-target');
+      targetSlot.classList.add('active-slot');
+      targetSlot.innerHTML = `
+        <div class="item-card ${upgTargetItem.rarity}" style="width:100%; height:100%; border:none; background:transparent;">
+          <div class="item-visual"><img src="${upgTargetItem.img}" alt=""></div>
+          <div class="item-name">${upgTargetItem.name}</div>
+          <div class="item-price">${upgTargetItem.price} ₽</div>
+        </div>
+      `;
+      updateUpgraderUI();
     }
 
-    function calculateUpgChance() {
-      const chanceText = document.getElementById('upg-chance');
-      const msg = document.getElementById('upg-msg');
-      const wheel = document.getElementById('upg-wheel');
-      const rotatingPointer = document.getElementById('upg-rotating-pointer');
-      
-      msg.innerText = '';
-      rotatingPointer.style.transition = 'none';
-      rotatingPointer.style.transform = 'rotate(0deg)';
+    function updateUpgraderUI() {
+      const inputSlot = document.getElementById('upg-input');
+      if (upgInputIndex !== null && inventory[upgInputIndex]) {
+        const item = inventory[upgInputIndex];
+        inputSlot.classList.add('active-slot');
+        inputSlot.innerHTML = `
+          <div class="item-card ${item.rarity}" style="width:100%; height:100%; border:none; background:transparent;">
+            <div class="item-visual"><img src="${item.img}" alt=""></div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} ₽</div>
+          </div>
+        `;
+      }
 
-      if (upgInputIndex !== null && upgTargetItem !== null) {
+      const chanceEl = document.getElementById('upg-chance');
+      const wheelEl = document.getElementById('upg-wheel');
+      const btnUpgrade = document.getElementById('btn-do-upgrade');
+
+      if (upgInputIndex !== null && upgTargetItem !== null && inventory[upgInputIndex]) {
         const inputPrice = inventory[upgInputIndex].price;
         const targetPrice = upgTargetItem.price;
 
-        if (inputPrice >= targetPrice) {
-          chanceText.innerText = '90.0%';
-          chanceText.style.color = 'var(--success)';
-          wheel.style.background = 'conic-gradient(#00ff88 0deg, #1b2432 360deg)';
-          document.getElementById('btn-do-upgrade').disabled = false;
+        if (targetPrice <= inputPrice) {
+          clearUpgTarget();
+          chanceEl.innerText = "0%";
+          btnUpgrade.disabled = true;
           return;
         }
 
-        let ratio = inputPrice / targetPrice;
-        let chance = ratio * 85; 
-
-        if (ratio < 0.3) chance *= 0.85;
-        if (ratio < 0.1) chance *= 0.7;
-
-        if (chance < 1) chance = 1;
+        let chance = (inputPrice / targetPrice) * 90;
         if (chance > 90) chance = 90;
+        chance = Math.round(chance * 10) / 10;
 
-        chanceText.innerText = chance.toFixed(1) + '%';
-        
-        let colorMain = '#e74c3c';
-        if (chance >= 70) colorMain = '#00ff88';
-        else if (chance >= 50) colorMain = '#2ecc71';
-        else if (chance >= 35) colorMain = '#f1c40f';
-        else if (chance >= 20) colorMain = '#e67e22';
-        
-        chanceText.style.color = colorMain;
-        
-        const chanceAngle = (chance / 100) * 360;
-        wheel.style.background = `conic-gradient(${colorMain} 0deg, ${colorMain} ${chanceAngle}deg, #161f2d ${chanceAngle}deg, #0d121a 360deg)`;
-        document.getElementById('btn-do-upgrade').disabled = false;
+        chanceEl.innerText = chance + "%";
+        btnUpgrade.disabled = false;
+
+        const deg = (chance / 100) * 360;
+        wheelEl.style.background = `conic-gradient(#ff8c00 0deg, #ff8c00 ${deg}deg, #1b2432 ${deg}deg, #1b2432 360deg)`;
       } else {
-        chanceText.innerText = '0%';
-        chanceText.style.color = '#fff';
-        wheel.style.background = 'conic-gradient(#1b2432 0deg, #1b2432 360deg)';
-        document.getElementById('btn-do-upgrade').disabled = true;
+        chanceEl.innerText = "0%";
+        wheelEl.style.background = `conic-gradient(#1b2432 0deg, #1b2432 360deg)`;
+        btnUpgrade.disabled = true;
       }
     }
 
     function executeUpgrade() {
-      if (upgInputIndex === null || upgTargetItem === null || isActionActive) return;
+      if (isActionActive || upgInputIndex === null || !upgTargetItem || !inventory[upgInputIndex]) return;
+
       isActionActive = true;
       document.getElementById('btn-do-upgrade').disabled = true;
-      const msg = document.getElementById('upg-msg');
-      msg.innerText = 'Вращение...';
-      msg.style.color = '#fff';
+      document.getElementById('upg-lightning').disabled = true;
 
-      const inputItem = inventory[upgInputIndex];
+      const inputPrice = inventory[upgInputIndex].price;
       const targetPrice = upgTargetItem.price;
-      
-      let ratio = inputItem.price / targetPrice;
-      let chance = (inputItem.price >= targetPrice) ? 0.90 : (ratio * 0.85);
-      if (ratio < 0.3 && inputItem.price < targetPrice) chance *= 0.85;
-      if (ratio < 0.1 && inputItem.price < targetPrice) chance *= 0.7;
-      if (chance > 0.9) chance = 0.9;
-      if (chance < 0.01) chance = 0.01;
+      let chance = (inputPrice / targetPrice) * 90;
+      if (chance > 90) chance = 90;
 
-      const chanceAngle = chance * 360;
-      const isSuccess = Math.random() < chance;
-      
-      let targetAngle = isSuccess ? (3 + Math.random() * (chanceAngle - 6)) : (chanceAngle + 3 + Math.random() * (360 - chanceAngle - 6));
-      const finalRotation = (360 * 6) + targetAngle; 
-      
-      const animDuration = upgFastMode ? 2 : 7.5;
+      const isWin = Math.random() * 100 < chance;
+      const winningAngle = isWin ? (Math.random() * (chance * 3.6 - 10) + 5) : (Math.random() * ((100 - chance) * 3.6 - 10) + chance * 3.6 + 5);
 
-      const rotatingPointer = document.getElementById('upg-rotating-pointer');
-      rotatingPointer.style.transition = 'none';
-      rotatingPointer.style.transform = 'rotate(0deg)';
-      void rotatingPointer.offsetWidth;
-      
-      rotatingPointer.style.transition = `transform ${animDuration}s cubic-bezier(0.15, 0.85, 0.15, 1.0)`;
-      rotatingPointer.style.transform = `rotate(${finalRotation}deg)`;
+      const pointer = document.getElementById('upg-rotating-pointer');
+      const duration = upgFastMode ? 1.5 : 4;
+      const fullRotations = (upgFastMode ? 3 : 6) * 360;
+      const totalDegrees = fullRotations + winningAngle;
+
+      pointer.style.transition = `transform ${duration}s cubic-bezier(0.15, 0.85, 0.25, 1)`;
+      pointer.style.transform = `rotate(${totalDegrees}deg)`;
+
+      let tickInterval = setInterval(() => {
+        playUpgTick(Math.random());
+      }, 100);
 
       setTimeout(() => {
-        isActionActive = false;
-        if (isSuccess) {
-          msg.innerText = 'УСПЕШНО!';
+        clearInterval(tickInterval);
+        playStopClickSound();
+
+        const msg = document.getElementById('upg-msg');
+        if (isWin) {
+          playWinSound();
           msg.style.color = 'var(--success)';
-          inventory.splice(upgInputIndex, 1);
-          inventory.push(upgTargetItem);
+          msg.innerText = 'УСПЕХ!';
+          inventory[upgInputIndex] = upgTargetItem;
         } else {
-          msg.innerText = 'ПРОВАЛ!';
+          playLoseSound();
           msg.style.color = 'var(--fail)';
+          msg.innerText = 'НЕУДАЧА';
           inventory.splice(upgInputIndex, 1);
         }
-        clearUpgInput();
+
+        saveState();
         updateInventoryDisplay();
-      }, (animDuration * 1000) + 100);
+
+        setTimeout(() => {
+          pointer.style.transition = 'none';
+          pointer.style.transform = 'rotate(0deg)';
+          msg.innerText = '';
+          clearUpgInput();
+          clearUpgTarget();
+          isActionActive = false;
+          document.getElementById('upg-lightning').disabled = false;
+        }, 1800);
+
+      }, duration * 1000);
     }
+
+    renderCasesGrid();
+    updateInventoryDisplay();
+    updateAuthUI();
   </script>
 </body>
 </html>
